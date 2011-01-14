@@ -1,4 +1,20 @@
 <h1>Top</h2>
-{% block content %}
-{% endblock %}
+<div id="menubar">
+  <div class="menuitem"><a href="/">Home</a></div>
+  <div class="menuitem">
+    {% if current_user %}
+      Hi {{ current_user.nickname }}. <a href="{{ logout_url }}">Logout</a>
+    {% else %}
+      <a href="{{ login_url }}">Login</a>
+    {% endif %}
+  </div>
+  {% if is_admin %}
+    <div class="menuitem">Go to <a href="/admin">admin</a> area.</div>
+  {% endif %}
+</div>
+
+<div class="maincontent">
+  {% block content %}{% endblock %}
+</div>
+
 <h1>Bottom</h2>

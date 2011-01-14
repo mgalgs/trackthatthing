@@ -1,4 +1,14 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h5>Hello, world</h5>
+  {% if current_user %}
+    <p>
+      Hello, {{ current_user.nickname }}! Your secret code is: "{{ secret }}".
+    </p>
+  {% endif %}
+
+  <p>
+    After you enter your secret into your device, you can view
+    a <a href="/live">live map</a> of yourself!
+  </p>
 {% endblock content %}

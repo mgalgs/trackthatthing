@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <h5>All your base</h5>
+
+  <h3>Secrets</h3>
+  <table cellspacing="0" cellpadding="8" border="1">
+    <tr>
+      <th>Email</th>
+      <th>Secret</th>
+      <th>Iterations to Find Secret</th>
+    </tr>
+    {% for secret in secrets %}
+      <tr>
+	<td>{{ secret.user.nickname }}</td>
+	<td>{{ secret.secret }}</td>
+	<td>{{ secret.niters }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

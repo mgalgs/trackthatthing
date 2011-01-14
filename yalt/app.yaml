@@ -1,8 +1,17 @@
-application: yalt
+application: yalt-tracker
 version: 1
 runtime: python
 api_version: 1
 
 handlers:
+
+- url: /secret
+  script: yalt.py
+  login: required
+
+- url: /admin
+  script: yalt.py
+  login: admin
+
 - url: /.*
   script: yalt.py
