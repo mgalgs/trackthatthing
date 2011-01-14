@@ -1,8 +1,8 @@
-application: hymnsiknow
+application: yalt
 version: 1
 runtime: python
 api_version: 1
 
 handlers:
 - url: /.*
-  script: hymnsiknow.py
+  script: yalt.py
