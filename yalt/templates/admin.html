@@ -2,16 +2,18 @@
 {% block content %}
   <h5>All your base</h5>
 
-  <h3>Secrets</h3>
+  <h3>Secrets ({{ secrets.count }})</h3>
   <table cellspacing="0" cellpadding="8" border="1">
     <tr>
       <th>Email</th>
+      <th>Readable Secret</th>
       <th>Secret</th>
       <th>Iterations to Find Secret</th>
     </tr>
     {% for secret in secrets %}
       <tr>
 	<td>{{ secret.user.nickname }}</td>
+	<td>{{ secret.secret_readable }}</td>
 	<td>{{ secret.secret }}</td>
 	<td>{{ secret.niters }}</td>
       </tr>

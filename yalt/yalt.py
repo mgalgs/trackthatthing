@@ -10,12 +10,14 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
+from django.utils import simplejson as json
 
 # local imports
 from simplewords import simplewords
 
 # max number of words in secret:
 max_secret_length = 4
+DEFAULT_NUM_POINTS = 30
 
 # helper functions:
 def get_a_secret(length):
@@ -25,24 +27,33 @@ def get_a_secret(length):
 def generate_secret():
     cnt = 1
     # start by trying a short secret:
-    st = get_a_secret(2)
+    st_r = get_a_secret(2)
+    st = st_r.replace(' ', '')
     while Secret.gql("WHERE secret = :1", st).count():
         # need to try a different secret:
-        st = get_a_secret(max_secret_length)
+        st_r = get_a_secret(max_secret_length)
+        st = st_r.replace(' ','')
         cnt += 1
         if cnt > 1000:
             raise(BaseException("We were unable to generate a secret... Weird."))
-    return st,cnt
+    return st_r,st,cnt
 
-# data models:
-class Location(db.Model):
+### data models: ###
+# base class that helps us serialize stuff later:
+class DictModel(db.Model):
+    def to_dict(self):
+        return dict([(p, unicode(getattr(self,p))) for p in self.properties()])
+
+class Location(DictModel):
     user = db.UserProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    
 
-class Secret(db.Model):
+class Secret(DictModel):
     user = db.UserProperty()
+    secret_readable = db.StringProperty()
     secret = db.StringProperty()
     niters = db.IntegerProperty() # number of iterations it took to generate this unique secret
 
@@ -54,6 +65,7 @@ class MyBaseHandler(webapp.RequestHandler):
     """
     def __init__(self):
         self.current_user = users.get_current_user()
+        self._already_output_headers = False
 
     def render_me(self, template_name, template_values={}):
         'Renders a template with given template values'
@@ -64,11 +76,11 @@ class MyBaseHandler(webapp.RequestHandler):
             if not secretq.count():
                 secret = Secret()
                 secret.user = self.current_user
-                secret.secret,secret.niters = generate_secret()
+                (secret.secret_readable, secret.secret, secret.niters) = generate_secret()
+                secret_text = secret.secret_readable
                 secret.put()
-                secret_text = secret.secret
             else:
-                secret_text = secretq.get().secret
+                secret_text = secretq.get().secret_readable
         else:
             secret_text = None
         template_values.update({
@@ -79,16 +91,18 @@ class MyBaseHandler(webapp.RequestHandler):
                 'secret': secret_text
                 })
         self.response.out.write( template.render(template_path, template_values) )
-    def debug_string(self, st):
+    def write_string(self, st):
         'Prints string to output'
-        self.response.headers['Content-Type'] = 'text/plain'
+        if not self._already_output_headers:
+            self.response.headers['Content-Type'] = 'text/plain'
+            self._already_output_headers = True
         self.response.out.write(st)
     def debug_var(self, var):
         'Pretty prints variable to output'
         st = StringIO.StringIO()
         pprint(var, st)
-        self.debug_string(st.getvalue())
-        
+        self.write_string(st.getvalue())
+
 
 # controllers:
 class MainPage(MyBaseHandler):
@@ -98,11 +112,43 @@ class MainPage(MyBaseHandler):
 
 class GetData(MyBaseHandler):
     def get(self):
-        self.render_me("get.html")
+        if 'secret' not in self.request.arguments():
+            obj = {'msg':'You must supply a secret.','success':False}
+        else:
+            clean_secret = self.request.get('secret').replace(' ','')
+            sq = Secret.all().filter('secret =', clean_secret)
+            if not sq.count():
+                obj = {'msg':'Invalid secret.','success':False}
+            else:
+                user = sq.get().user
+            num_points = int(self.request.get('n')) if 'n' in self.request.arguments() else DEFAULT_NUM_POINTS
+            locations = Location.all().filter('user = ', user).order('-date').fetch(num_points)
+            obj = {
+                'msg':'Success!',
+                'success':True,
+                'data':{'locations':[l.to_dict() for l in locations]}
+                }
+        self.write_string(json.dumps(obj))
 
 class PutData(MyBaseHandler):
     def get(self):
-        self.render_me("put.html")
+        if 'lat' not in self.request.arguments() or 'lon' not in self.request.arguments() or 'secret' not in self.request.arguments():
+            obj = {'msg':'You must supply "lat", "lon", and "secret" arguments.','success':False}
+        else:
+            sec = self.request.get('secret').replace(' ','')
+            sq = Secret.gql("WHERE secret = :1", sec)
+            if not sq.count():
+                obj = {'msg':'Bad secret: "%s"...' % sec, 'success':False}
+            else:
+                u = sq.get().user
+                l = Location()
+                l.latitude = float(self.request.get('lat'))
+                l.longitude = float(self.request.get('lon'))
+                l.user = u
+                l.put()
+                obj = {'msg':'Success!','success':True}
+
+        self.write_string(json.dumps(obj))
 
 class Admin(MyBaseHandler):
     def get(self):
@@ -113,12 +159,15 @@ class Admin(MyBaseHandler):
                     'user': user
                     })
         else:
-            self.debug_string('Hilo there ' + str(user) + '\n')
+            self.write_string('Hilo there ' + str(user) + '\n')
             self.debug_var(user)
 
 class Live(MyBaseHandler):
     def get(self):
-        self.render_me("live.html")
+        sec = None
+        if 'secret' in self.request.arguments():
+            sec = self.request.get('secret')
+        self.render_me("live.html", {'lsecret':sec})
 
 
 application = webapp.WSGIApplication(

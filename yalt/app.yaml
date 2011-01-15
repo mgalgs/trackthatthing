@@ -13,5 +13,8 @@ handlers:
   script: yalt.py
   login: admin
 
+- url: /resources
+  static_dir: resources
+
 - url: /.*
   script: yalt.py
