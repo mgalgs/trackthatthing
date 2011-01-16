@@ -1,0 +1,11 @@
+.big-button {
+   font-size: 30px;
+   font-weight: bold;
+   color: Black;
+   background: Gainsboro;
+   border: 3px solid Green;
+   padding: 10px;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+   display: inline-block;
+}

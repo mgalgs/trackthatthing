@@ -7,6 +7,7 @@
 
     <!-- site css files: -->
     <link rel="stylesheet" href="/resources/css/main.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/css/big-button.css" type="text/css" media="screen" />
     {% block more_css %}{% endblock %}
 
 
@@ -17,31 +18,40 @@
      google.load("jqueryui", "1.8.5");
    </script>
    <script type="text/javascript" src="/resources/js/defaultText.js"></script>
+   <script type="text/javascript" src="/resources/js/buttonStyles.js"></script>
     {% block more_js %}{% endblock %}
 
   </head>
   <body>
 
-    <h1>Top</h2>
-    <div id="menubar">
-      <div class="menuitem"><a href="/">Home</a></div>
-      <div class="menuitem">
-	{% if current_user %}
-	  Hi {{ current_user.nickname }}. <a href="{{ logout_url }}">Logout</a>
-	{% else %}
-	  <a href="{{ login_url }}">Login</a>
-	{% endif %}
+    <div id="main-container">
+      <div id="header">
+	<span id="yalt-header">yalt</span>
+	<span id="sub-header">{ Yet Another Location Tracker }</span>
       </div>
-      {% if is_admin %}
-	<div class="menuitem">Go to <a href="/admin">admin</a> area.</div>
-      {% endif %}
-    </div>
+      <ul id="menubar">
+	<li class="menuitem"><a href="/">Home</a></li>
+	<li class="menuitem"><a href="/live" style="font-weight: bold;">Live Map</a></li>
+	<li class="menuitem"><a href="/about">About</a></li>
+	<li class="menuitem"><a href="/help">Help</a></li>
+	{% if is_admin %}
+	  <li class="menuitem"><a href="/admin">Admin</a></li>
+	{% endif %}
+	<li class="menuitem right">
+	  {% if current_user %}
+	    <span id="username"><a href="/live">{{ current_user.nickname }}</a></span> | <a href="{{ logout_url }}">Logout</a>
+	  {% else %}
+	    <a href="{{ login_url }}">Login</a>
+	  {% endif %}
+	</li>
+      </ul>
 
-    <div class="maincontent">
-      {% block content %}{% endblock %}
-    </div>
+      <div id="main-content">
+	{% block content %}{% endblock %}
+      </div>
 
-    <h1>Bottom</h2>
+      <div id="footer">This is the site footer</div>
+    </div>
 
   </body>
 </html>

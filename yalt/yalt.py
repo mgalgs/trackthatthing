@@ -21,7 +21,7 @@ DEFAULT_NUM_POINTS = 30
 
 # helper functions:
 def get_a_secret(length):
-    salt = ''.join([random.choice('0123456789ABC') for i in xrange(3)])
+    salt = ''.join([random.choice('123456789ABC') for i in xrange(3)])
     return ' '.join([random.choice(simplewords) for i in xrange(length)]) + ' ' + salt
 
 def generate_secret():
@@ -169,12 +169,26 @@ class Live(MyBaseHandler):
             sec = self.request.get('secret')
         self.render_me("live.html", {'lsecret':sec})
 
+class Help(MyBaseHandler):
+    def get(self):
+        self.render_me('help.html')
+
+class About(MyBaseHandler):
+    def get(self):
+        self.render_me('about.html')
+
+class Download(MyBaseHandler):
+    def get(self):
+        self.render_me('download.html')
 
 application = webapp.WSGIApplication(
     [('/', MainPage),
      ('/put', PutData),
      ('/get', GetData),
      ('/live', Live),
+     ('/help', Help),
+     ('/about', About),
+     ('/download', Download),
      ('/admin', Admin)],
     debug=True)
 

@@ -2,6 +2,64 @@
    font-family: verdana, trebuchet MS;
    font-size: 13px;
 }
+body {
+   text-align: center;
+}
+a {
+   text-decoration: none;
+   color: RoyalBlue;
+}
+a:visited {
+   color: Navy;
+}
+#main-container {
+   width: 950px;
+   margin: 0 auto;
+   text-align: left;
+   border: 2px solid SeaGreen;
+   padding: 25px;
+}
+#main-content {
+   min-height: 300px;
+}
+#header {
+}
+#yalt-header {
+   font-size: 75px;
+   font-weight: bold;
+   font-family: Georgia, Helvetica;
+}
+#sub-header {
+   font-size: 13px;
+}
+#footer {
+   color: gray;
+   text-align: center;
+}
+ul#menubar {
+   border: 5px solid SeaGreen;
+   padding: 0px;
+   background: DarkGreen;
+}
+ul#menubar li.menuitem, ul#menubar li.menuitem a {
+   color: white;
+}
+ul#menubar li.menuitem {
+   display: table-cell;
+   padding: 10px 0px;
+}
+ul#menubar li.menuitem a:hover {
+   background: Green;
+}
+ul#menubar li.menuitem a {
+   font-weight: bold;
+   padding: 10px;
+}
+ul#menubar li.menuitem.right {
+   float: right;
+   position: relative;
+   bottom: 37px;
+}
 input.defaultText {
    width: 300px;
 }
@@ -24,4 +82,38 @@ input[type="text"], input[type="password"] {
    cursor:pointer;
    color: blue;
    text-decoration: underline;
+}
+#main-button-container {
+   text-align: center;
+   padding: 10px 0px;
+}
+#main-button-container p {
+   text-align: left;
+   margin: 0 auto;
+   width: 200px;
+}
+div.instructions {
+   width: 350px;
+   background: LightBlue;
+   border: 2px solid black;
+   text-align: left;
+}
+#username {
+   font-weight: bold;
+}
+#secret-code-spot {
+   font-size: 14px;
+   text-align: center;
+   color: Black;
+   background: Gainsboro;
+   border: 3px solid Green;
+   padding: 10px;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+   margin: 0 auto;
+   width: 650px;
+}
+#the-secret-code {
+   font-weight: bold;
+   text-size: larger;
 }

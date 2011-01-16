@@ -1,14 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% if current_user %}
-    <p>
-      Hello, {{ current_user.nickname }}! Your secret code is: "{{ secret }}".
-    </p>
-  {% endif %}
+{% if current_user %}
+  <div id="secret-code-spot">
+    Hello, {{ current_user.nickname }}! Your secret code is: "<span id="the-secret-code">{{ secret }}</span>".
+  </div>
+{% endif %}
 
-  <p>
-    After you enter your secret into your device, you can view
-    a <a href="/live">live map</a> of yourself!
-  </p>
+<div id="main-button-container">
+  {% if not current_user %}
+    <a href="{{ login_url }}" id="main-button" class="big-button">Get Secret!</a>
+  {% endif %}
+  <div class="instructions" style="width:550px; margin: 20px auto;">
+    <h5 style="text-align: center;">How to start tracking your location using yalt:</h5>
+    <ol>
+      <li>Get a secret (click the button above)</li>
+      <li><a href="/download">Download</a> and install yalt for Android (iPhone support coming soon)</li>
+      <li>View a <a href="/live">live map</a> of yourself and share it with others!</li>
+    </ol>
+  </div>
+</div>
+
 {% endblock content %}
