@@ -21,7 +21,7 @@ DEFAULT_NUM_POINTS = 30
 
 # helper functions:
 def get_a_secret(length):
-    salt = ''.join([random.choice('123456789ABC') for i in xrange(3)])
+    salt = ''.join([random.choice('123456789abc') for i in xrange(3)])
     return ' '.join([random.choice(simplewords) for i in xrange(length)]) + ' ' + salt
 
 def generate_secret():
@@ -48,6 +48,7 @@ class Location(DictModel):
     user = db.UserProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
+    accuracy = db.FloatProperty()
     date = db.DateTimeProperty(auto_now_add=True)
     
 
@@ -132,8 +133,14 @@ class GetData(MyBaseHandler):
 
 class PutData(MyBaseHandler):
     def get(self):
-        if 'lat' not in self.request.arguments() or 'lon' not in self.request.arguments() or 'secret' not in self.request.arguments():
-            obj = {'msg':'You must supply "lat", "lon", and "secret" arguments.','success':False}
+        required_args = ['lat', 'lon', 'acc', 'secret']
+        valid_args = True
+        for a in required_args:
+            if a not in self.request.arguments():
+                valid_args = False
+                break
+        if not valid_args:
+            obj = {'msg':'You must supply "lat", "lon", "acc", and "secret" arguments.','success':False}
         else:
             sec = self.request.get('secret').replace(' ','')
             sq = Secret.gql("WHERE secret = :1", sec)
@@ -144,6 +151,7 @@ class PutData(MyBaseHandler):
                 l = Location()
                 l.latitude = float(self.request.get('lat'))
                 l.longitude = float(self.request.get('lon'))
+                l.accuracy = float(self.request.get('acc'))
                 l.user = u
                 l.put()
                 obj = {'msg':'Success!','success':True}
