@@ -14,4 +14,9 @@ indexes:
   properties:
   - name: user
   - name: date
+
+- kind: Location
+  properties:
+  - name: user
+  - name: date
     direction: desc

@@ -3,26 +3,28 @@
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
   <script type="text/javascript" src="/resources/js/live.js"></script>
 {% endblock %}
+{% block more_css %}
+  <link rel="stylesheet" href="/resources/css/live.css" type="text/css" media="screen" />
+{% endblock %}
 {% block content %}
 
-  <div style="font-size:1.3em; padding-top:1.3em;">
-    Live Map for <span id="current-map-for">{{ current_user.nickname }}</span>
-    <span style="font-size:1em;">[<span class="pseudo-link" id="change-secret">Change</span>]</span>
+  <div style="padding:15px 0px;">
+    <div style="font-size:1.3em;">
+      Live Map for <span id="current-map-for">{{ current_user.nickname }}</span>
+      <span style="font-size:1em;">[<span class="pseudo-link" id="change-secret">Change</span>]</span>
+    </div>
+    <div id="secret-change-area" style="display:none;">
+      <input name="theSecret" type="text" class="defaultText" value="" title="Enter secret" />
+      <div id="change-secret-go">Go!</div>
+    </div>
   </div>
-  <div id="secret-change-area" style="display:none;">
-    <input name="theSecret" type="text" class="defaultText" value="" title="Enter secret" />
-    <div id="change-secret-go">Go!</div>
-  </div>
-  {% if lsecret %}
-    <input type="hidden" name="secret" value="{{ lsecret }}" />
-  {% else %}
-    {% if secret %}
-      <input type="hidden" name="secret" value="{{ secret }}" />
-    {% endif %}
-  {% endif %}
-  <div id="map-canvas" style="height:500px;width:600px;"></div>
 
   Number of points to display: <input type="text" value="30" style="width:50px;" id="num-points" />
+  <div class="button" id="apply-changes">Apply</div>
+  <div class="button" id="toggle-autorefresh">Enable Autorefresh</div>
+
+  <div id="map-canvas" style="height:600px;width:900px;"></div>
+
 
   
 {% endblock %}

@@ -8,6 +8,7 @@
     <!-- site css files: -->
     <link rel="stylesheet" href="/resources/css/main.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/resources/css/big-button.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/css/jquery.gritter.css" type="text/css" media="screen" />
     {% block more_css %}{% endblock %}
 
 
@@ -19,6 +20,7 @@
    </script>
    <script type="text/javascript" src="/resources/js/defaultText.js"></script>
    <script type="text/javascript" src="/resources/js/buttonStyles.js"></script>
+   <script type="text/javascript" src="/resources/js/jquery.gritter.min.js"></script>
     {% block more_js %}{% endblock %}
 
   </head>
@@ -52,6 +54,14 @@
 
       <div id="footer">This is the site footer</div>
     </div>
+
+    {% if lsecret %}
+      <input type="hidden" name="secret" value="{{ lsecret }}" />
+    {% else %}
+      {% if secret %}
+	<input type="hidden" name="secret" value="{{ secret }}" />
+      {% endif %}
+    {% endif %}
 
   </body>
 </html>

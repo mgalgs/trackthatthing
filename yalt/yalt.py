@@ -1,5 +1,7 @@
 # system imports
 import os
+import datetime
+import logging
 import StringIO
 from pprint import pprint
 import random
@@ -18,6 +20,7 @@ from simplewords import simplewords
 # max number of words in secret:
 max_secret_length = 4
 DEFAULT_NUM_POINTS = 30
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 # helper functions:
 def get_a_secret(length):
@@ -42,14 +45,18 @@ def generate_secret():
 # base class that helps us serialize stuff later:
 class DictModel(db.Model):
     def to_dict(self):
-        return dict([(p, unicode(getattr(self,p))) for p in self.properties()])
+        d = dict([(p, unicode(getattr(self,p))) for p in self.properties()])
+        d.update({'id':self.key().id()})
+        return d
 
 class Location(DictModel):
     user = db.UserProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
     accuracy = db.FloatProperty()
+    speed = db.FloatProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+
     
 
 class Secret(DictModel):
@@ -111,6 +118,10 @@ class MainPage(MyBaseHandler):
         self.render_me('index.html')
 
 
+def str_to_date(date_string):
+    'returns datetime.datetime object by parsing the passed-in string'
+    return datetime.datetime.strptime(date_string[0:date_string.index('.')], DATE_FORMAT)
+
 class GetData(MyBaseHandler):
     def get(self):
         if 'secret' not in self.request.arguments():
@@ -122,25 +133,29 @@ class GetData(MyBaseHandler):
                 obj = {'msg':'Invalid secret.','success':False}
             else:
                 user = sq.get().user
-            num_points = int(self.request.get('n')) if 'n' in self.request.arguments() else DEFAULT_NUM_POINTS
-            locations = Location.all().filter('user = ', user).order('-date').fetch(num_points)
-            obj = {
-                'msg':'Success!',
-                'success':True,
-                'data':{'locations':[l.to_dict() for l in locations]}
-                }
+                num_points = int(self.request.get('n')) if 'n' in self.request.arguments() else DEFAULT_NUM_POINTS
+                lq = Location.all().filter('user = ', user)
+                if 'last' in self.request.arguments():
+                    lq.filter('date > ', str_to_date(self.request.get('last')) )
+                locations = lq.order('-date').fetch(num_points)
+                logging.info( 'giving ' + str(num_points) + ' points: ' + str(len(locations)) )
+                obj = {
+                    'msg':'Success!',
+                    'success':True,
+                    'data':{'locations':[l.to_dict() for l in locations]}
+                    }
         self.write_string(json.dumps(obj))
 
 class PutData(MyBaseHandler):
     def get(self):
-        required_args = ['lat', 'lon', 'acc', 'secret']
+        required_args = ['lat', 'lon', 'acc', 'secret', 'speed']
         valid_args = True
         for a in required_args:
             if a not in self.request.arguments():
                 valid_args = False
                 break
         if not valid_args:
-            obj = {'msg':'You must supply "lat", "lon", "acc", and "secret" arguments.','success':False}
+            obj = {'msg':'You must supply "lat", "lon", "acc", "speed", and "secret" arguments.','success':False}
         else:
             sec = self.request.get('secret').replace(' ','')
             sq = Secret.gql("WHERE secret = :1", sec)
@@ -152,6 +167,7 @@ class PutData(MyBaseHandler):
                 l.latitude = float(self.request.get('lat'))
                 l.longitude = float(self.request.get('lon'))
                 l.accuracy = float(self.request.get('acc'))
+                l.speed = float(self.request.get('speed'))
                 l.user = u
                 l.put()
                 obj = {'msg':'Success!','success':True}
@@ -169,6 +185,36 @@ class Admin(MyBaseHandler):
         else:
             self.write_string('Hilo there ' + str(user) + '\n')
             self.debug_var(user)
+
+class NewTestPoint(MyBaseHandler):
+    def get(self):
+        if users.is_current_user_admin():
+            # check for required args:
+            required_args = ['lat_step', 'lon_step', 'acc_step', 'speed_step']
+            valid_args = True
+            for a in required_args:
+                if a not in self.request.arguments():
+                    valid_args = False
+                    break
+            if not valid_args:
+                obj = {'msg':'You must supply '+', '.join(required_args)+' arguments.','success':False}
+            else:
+                user = self.current_user
+                l = Location.all().filter('user = ', user).order('-date').get()
+                newl = Location()
+                newl.latitude = l.latitude + float(self.request.get('lat_step'))
+                newl.longitude= l.longitude + float(self.request.get('lon_step'))
+                newl.accuracy = l.accuracy + float(self.request.get('acc_step'))
+                newl.speed = l.speed + float(self.request.get('speed_step'))
+                newl.user = l.user
+                newl.put()
+
+                obj = {'msg':'Test point added: ' + str(newl.to_dict()), 'title':'Succes!', 'success':True}
+        else:
+            obj = {'msg':'Nope. You must be an admin to get here...', 'success':False}
+
+        self.write_string(json.dumps(obj))
+            
 
 class Live(MyBaseHandler):
     def get(self):
@@ -197,6 +243,7 @@ application = webapp.WSGIApplication(
      ('/help', Help),
      ('/about', About),
      ('/download', Download),
+     ('/new_test_point', NewTestPoint),
      ('/admin', Admin)],
     debug=True)
 

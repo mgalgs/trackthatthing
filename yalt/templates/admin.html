@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% block more_js %}
+  <script type="text/javascript" src="/resources/js/admin.js"></script>
+{% endblock %}
 {% block content %}
   <h5>All your base</h5>
+  <div id="new-test-point" class="button">Insert Test Point</div>
+  <div id="start-inserting-test-points" class="button">Start Repeatedly Inserting Test Points</div>
 
   <h3>Secrets ({{ secrets.count }})</h3>
   <table cellspacing="0" cellpadding="8" border="1">

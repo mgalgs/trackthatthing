@@ -6,6 +6,9 @@ import android
 from itertools import count
 from pprint import pprint
 
+DEFAULT_SECRET = 'drive skin 226'
+DEFAULT_SERVER = 'http://firsthome.homelinux.org:8080'
+DEFAULT_UPDATE_RATE = 10
 
 def event_loop(droid):
   for i in xrange(10):
@@ -15,7 +18,7 @@ def event_loop(droid):
     time.sleep(2)
   return None
 
-def get_gps_location(droid):
+def get_location(droid):
   droid.startLocating()
   try:
     return event_loop(droid)
@@ -23,8 +26,12 @@ def get_gps_location(droid):
     droid.stopLocating()
 
 def get_lat_lon(droid):
-  g = get_gps_location(droid)
+  g = get_location(droid)
   if g is None: return None
+
+  print 'the result'
+  print g
+  print
   data = g.result['data']
 
   # get the best provider:
@@ -42,6 +49,7 @@ def get_lat_lon(droid):
   # return the data:
   return {'lat':g.result['data'][provider]['latitude'],
           'lon':g.result['data'][provider]['longitude'],
+          'speed':g.result['data'][provider]['speed'],
           'acc':g.result['data'][provider]['accuracy']}
 
 def put_loc(droid,base_url,params):
@@ -50,20 +58,22 @@ def put_loc(droid,base_url,params):
   url = base_url + "/put?" + urllib.urlencode(params)
   req = urllib2.Request(url)
   opener = urllib2.build_opener()
-  f = opener.open(req)
   try:
+    f = opener.open(req)
     j = json.load(f)
+    print 'got server response from url %s: %s' % (url, str(j))
   except:
     print 'yaltdroid broke. url was: ' + url
+    print 'req was: ' + str(req)
     droid.notify('yaltdroid broke.', 'url was: '+url)
-  print 'got server response from url %s: %s' % (url, str(j))
 
 if __name__ == "__main__":
   droid = android.Android()
 
-  params = {'secret':'drive skin 226',
-            'base_url':'http://172.16.0.4:8080',
-            'update_freq':10}
+  # set up some parameters:
+  params = {'secret':DEFAULT_SECRET,
+            'base_url':DEFAULT_SERVER,
+            'update_freq':DEFAULT_UPDATE_RATE}
   secret = droid.dialogGetInput('Secret', 'Please enter your secret', params['secret'])
   base_url = droid.dialogGetInput('Base URL', 'Please enter the base url of the server', params['base_url'])
   update_freq = droid.dialogGetInput('Update Frequency', 'Please enter the desired update frequency (seconds)', str(params['update_freq']))
