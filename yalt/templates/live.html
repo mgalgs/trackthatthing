@@ -26,5 +26,30 @@
   <div id="map-canvas" style="height:600px;width:900px;"></div>
 
 
-  
+
+  <!-- the template for the InfoWindow: -->
+  <script id="info-window-template" type="text/x-jquery-tmpl">
+    <div class="info-window-top">
+      <h5 style="padding-bottom:10px;">${date} UTC</h5>
+      <div class="info-window-item">
+	<div class="info-window-left">Latitude:</div>
+	<div class="info-window-right">${latitude}</div>
+      </div>
+      <div class="info-window-item">
+	<div class="info-window-left">Longitude:</div>
+	<div class="info-window-right">${longitude}</div>
+      </div>
+      <div class="info-window-item">
+	<div class="info-window-left">Accuracy:</div>
+	<div class="info-window-right">${accuracy}</div>
+      </div>
+      <div class="info-window-item">
+	<div class="info-window-left">Speed:</div>
+	<div class="info-window-right">${speed}</div>
+      </div>
+    </div>
+  </script>
+
+  <div id="hide-me" style="display:none;"></div>
+
 {% endblock %}

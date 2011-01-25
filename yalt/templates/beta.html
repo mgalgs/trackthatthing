@@ -24,40 +24,18 @@
    <script type="text/javascript" src="/resources/js/jquery.tmpl.min.js"></script>
     {% block more_js %}{% endblock %}
 
-    <!--
-	Icons on map pushpins by Joseph Wain: http://www.glyphish.com/
-    -->
-
   </head>
   <body>
 
     <div id="main-container">
       <div id="header">
-	<span id="yalt-header">Track That Thing</span>
+	<a href="/" style="color:black;"><span id="yalt-header">Track That Thing</span></a>
 	<span id="sub-header">{ Yet Another Location Tracker }</span>
       </div>
-      <ul id="menubar">
-	<li class="menuitem"><a href="/">Home</a></li>
-	<li class="menuitem"><a href="/live" style="font-weight: bold;">Live Map</a></li>
-	<li class="menuitem"><a href="/about">About</a></li>
-	<li class="menuitem"><a href="/help">Help</a></li>
-	{% if is_admin %}
-	  <li class="menuitem"><a href="/admin">Admin</a></li>
-	{% endif %}
-	<li class="menuitem right">
-	  {% if current_user %}
-	    <span id="username"><a href="/live">{{ current_user.nickname }}</a></span> | <a href="{{ logout_url }}">Logout</a>
-	  {% else %}
-	    <a href="{{ login_url }}">Login</a>
-	  {% endif %}
-	</li>
-      </ul>
 
-      <div id="main-content">
-	{% block content %}{% endblock %}
-      </div>
+      <h3 style="padding:150px 0px 50px 0px; text-align:right;">coming soon to a thing* near you...</h3>
+      <div style="color:gray; font-size:9px; text-align:right;">* android, iphone, tennis shoes, etc.</div>
 
-      <div id="footer">This is the site footer</div>
     </div>
 
     {% if lsecret %}

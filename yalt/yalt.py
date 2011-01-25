@@ -22,6 +22,9 @@ max_secret_length = 4
 DEFAULT_NUM_POINTS = 30
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+# are we on the cloud or a local dev server:
+is_dev_server = os.environ['SERVER_SOFTWARE'].startswith('Dev')
+
 # helper functions:
 def get_a_secret(length):
     salt = ''.join([random.choice('123456789abc') for i in xrange(3)])
@@ -235,17 +238,27 @@ class Download(MyBaseHandler):
     def get(self):
         self.render_me('download.html')
 
+class Beta(MyBaseHandler):
+    def get(self):
+        self.render_me('beta.html')
+
+url_spec = [('/', MainPage),
+            ('/put', PutData),
+            ('/get', GetData),
+            ('/live', Live),
+            ('/help', Help),
+            ('/about', About),
+            ('/download', Download),
+            ('/new_test_point', NewTestPoint),
+            ('/admin', Admin)]
+beta_spec = [(r'.*', Beta)]
+
+dev_spec = url_spec
+live_spec = beta_spec
+
 application = webapp.WSGIApplication(
-    [('/', MainPage),
-     ('/put', PutData),
-     ('/get', GetData),
-     ('/live', Live),
-     ('/help', Help),
-     ('/about', About),
-     ('/download', Download),
-     ('/new_test_point', NewTestPoint),
-     ('/admin', Admin)],
-    debug=True)
+    dev_spec if is_dev_server else live_spec,
+    debug=is_dev_server)
 
 def main():
     run_wsgi_app(application)

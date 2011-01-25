@@ -32,6 +32,35 @@ var renew_map = function() {
     });
 };
 
+
+var attach_info_window = function(pp, data, ind) {
+    // the infowindow:
+    var id = "info-window-holder-thing-"+ind;
+    var target = $('#'+id);
+    if (target.length < 1) {
+	$('#hide-me').append('<div id="'+id+'"></div>');
+	target = $('#'+id);
+    }
+    target.html( $("#info-window-template").tmpl(data[ind])[0] );
+    var iw = new google.maps.InfoWindow({
+	// content: 'stufffs'
+	content: target[0]
+    });
+    the_info_windows.push(iw);
+
+    // add listener to show InfoWindow when they click a marker:
+    google.maps.event.addListener(pp, 'click', function(e) {
+	close_info_windows();
+	iw.open(the_map, pp);
+    });
+};
+
+var close_info_windows = function() {
+    for (var i in the_info_windows) {
+	the_info_windows[i].close();
+    }
+};
+
 var draw_new_points = function(data) {
     var the_coords = [];
     var the_markers = [];
@@ -39,32 +68,35 @@ var draw_new_points = function(data) {
     for (i in data) {
 	var ll = new google.maps.LatLng(data[i].latitude,
 					data[i].longitude);
-	var title_text = data[i]['date'] + 'UTC' +
-	    "\nLatitude: " + data[i]['latitude'] +
-	    "\nLongitude: " + data[i]['longitude'] +
-	    "\nAccuracy: " + data[i]['accuracy'] +
-	    "\nSpeed: " + data[i]['speed'];
-	// var mrkr = new google.maps.Marker({
-	// 	position: ll,
-	// 	title: title_text,
-	// 	map: the_map
-	// });
-	var mrkr = new google.maps.Circle({
+	// add the circle accuracy indicators:
+	var mrkr_acc = new google.maps.Circle({
 	    center: ll,
-	    // radius: data[i]['accuracy'],
-	    radius: 12,
+	    clickable: false,
+	    radius: parseInt(data[i]['accuracy']),
 	    fillColor: "#DD3333",
-	    fillOpacity: 0.5,
+	    fillOpacity: 0.18,
 	    strokeOpacity: 0,
+	    zIndex: 7,
 	    map: the_map
 	});
+	// the pushpin:
+	var pushpin = new google.maps.Marker({
+	    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon_withshadow&chld=glyphish_gear|ADDE63',
+	    map: the_map,
+	    position: ll,
+	    title: data[i]['date']+' -> '+i
+	});
+
+	attach_info_window(pushpin, data, i);
 
 	the_coords.push(ll);
 	new_data_points.push({'raw':data[i],'ll':ll});
-	the_markers.push(mrkr);
+	the_markers.push(mrkr_acc);
+	the_pushpins.push(pushpin);
     } // eo for i in locations
     new_data_points.reverse();
     data_points = data_points.concat(new_data_points);
+
 
     // just in case we only added one point:
     if (new_data_points.length == 1 && data_points.length) {
@@ -74,11 +106,13 @@ var draw_new_points = function(data) {
 	];
     }
 
+    // Draw the line:
     var the_path = new google.maps.Polyline({
 	path: the_coords,
 	strokeColor: "#0011AA",
 	strokeOpacity: 0.7,
-	strokeWeight: 5
+	strokeWeight: 5,
+	zIndex: 5
     });
 
     current_overlays.push(the_path);
@@ -117,10 +151,15 @@ var recenter_map = function() {
 var clear_map = function() {
     for (i in current_overlays) {
 	current_overlays[i].setMap(null);
-	current_overlays[i];
+	current_overlays[i] = null;
+    }
+    for (i in the_pushpins) {
+	the_pushpins[i].setMap(null);
+	the_pushpins[i] = null;
     }
     current_overlays = [];
     data_points = [];
+    the_pushpins = [];
 };
 
 var toggle_auto_refresh = function() {
@@ -140,11 +179,14 @@ var toggle_auto_refresh = function() {
 // item in slot 0, newest at the back
 var data_points = [];
 var current_overlays = [];
+var the_info_windows = [];
+var the_pushpins = [];
 var the_map = null;
 
 var refreshing_task_is_running = false;
 var refreshing_task_id = null;
 var refreshing_task_period = 5000; // ms
+
 
 $(function() {
     the_map = new google.maps.Map($("#map-canvas")[0], {
@@ -180,6 +222,8 @@ $(function() {
     $("#toggle-autorefresh").click(toggle_auto_refresh);
 
     // toggle_auto_refresh();
+
+    google.maps.event.addListener(the_map, 'click', close_info_windows);
 
     renew_map();
 });
