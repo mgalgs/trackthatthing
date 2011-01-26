@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal|center_vertical"
+    >
+    <TextView
+    	android:id="@+id/start_tracking"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:padding="10dp"
+    	android:textSize="28sp"
+    	android:textStyle="bold"
+    	android:text="@string/start_tracking" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@drawable/android_skate_button" />
+</LinearLayout>
