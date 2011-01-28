@@ -3,34 +3,47 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center_horizontal|center_vertical"
+    android:gravity="center_horizontal"
     >
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_horizontal"
+		android:padding="20dp"
+		>
+	    <Button
+    		android:id="@+id/btn_toggle_tracking"
+    		android:text="@string/toggle_tracking_button"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content" />
+	</LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:orientation="horizontal"
     	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
+    	android:layout_height="fill_parent"
+    	android:gravity="bottom"
     	>
 	    <TextView
 	    	android:text="@string/the_secret_code_label"
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
-	    	android:layout_marginLeft="20sp"
+	    	android:padding="5sp"
 	    	/>
 	    <TextView
 	    	android:id="@+id/the_secret_code"
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
-	    	android:padding="10dp"
-	    	android:textSize="20sp"
 	    	android:textStyle="bold" />
-	    <Button
-	    	android:id="@+id/btn_change_secret"
-	    	android:text="@string/change_secret_button"
-	    	android:layout_width="wrap_content"
-	    	android:layout_height="wrap_content"
-	    	android:layout_marginLeft="20sp"
-			/>
+    <Button
+    	android:id="@+id/btn_change_secret"
+    	android:text="@string/change_secret_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_marginLeft="20dp"
+		/>
     </LinearLayout>
     
     <TextView

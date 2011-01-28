@@ -9,4 +9,7 @@
     <string name="enter_your_secret">Enter your secret code:</string>
     <string name="the_secret_code_label">Using secret code:</string>
     <string name="change_secret_button">Change</string>
+	<string name="local_service_started">Local Service Started Thanks.</string>
+	<string name="local_service_stopped">Local Service Stopped Yes.</string>
+	<string name="toggle_tracking_button">Replace me please.</string>
 </resources>
