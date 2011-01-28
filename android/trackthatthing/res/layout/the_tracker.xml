@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal|center_vertical"
+    >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	>
+	    <TextView
+	    	android:text="@string/the_secret_code_label"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_marginLeft="20sp"
+	    	/>
+	    <TextView
+	    	android:id="@+id/the_secret_code"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:padding="10dp"
+	    	android:textSize="20sp"
+	    	android:textStyle="bold" />
+	    <Button
+	    	android:id="@+id/btn_change_secret"
+	    	android:text="@string/change_secret_button"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_marginLeft="20sp"
+			/>
+    </LinearLayout>
+    
+    <TextView
+    	android:id="@+id/status_message"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content" />
+</LinearLayout>
