@@ -3,4 +3,10 @@
     <string name="hello">Hello World, TrackThatThing!</string>
     <string name="app_name">Track That Thing</string>
     <string name="start_tracking">Track This Thing!</string>
+    <string name="the_tracker">This is the tracker screen!</string>
+    <string name="the_secret_getter">This is the secret getter screen!</string>
+    <string name="save_secret">Go!</string>
+    <string name="enter_your_secret">Enter your secret code:</string>
+    <string name="the_secret_code_label">Using secret code:</string>
+    <string name="change_secret_button">Change</string>
 </resources>
