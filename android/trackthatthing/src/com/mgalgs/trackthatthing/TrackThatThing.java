@@ -12,9 +12,11 @@ import android.widget.Toast;
 
 public class TrackThatThing extends Activity {
 	public static final String TAG = "TrackThatThing Message";
+	public static final int GET_SECRET = 0;
 	public static final String PREFS_NAME = "TTTPrefsFile";
 	public static final String PREF_SECRET_CODE = "secret_code";
-	public static final int GET_SECRET = 0; 
+	public static String PREF_SLEEP_TIME = "sleep_time";
+	public static long DEFAULT_SLEEP_TIME = 30; //seconds 
 	
 	private String secret_code;
 	
@@ -35,6 +37,7 @@ public class TrackThatThing extends Activity {
     
     public void launchTracker() {
         Intent i = new Intent(this, TheTracker.class);
+        i.putExtra("auto_start_tracking", true);
         startActivity(i);
     }
     public void launchSecretGetter() {
