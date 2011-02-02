@@ -9,9 +9,13 @@
 {% block content %}
 
   <div style="padding:15px 0px;">
-    <div style="font-size:1.3em;">
-      Live Map for <span id="current-map-for">{{ current_user.nickname }}</span>
+    <div style="font-size:1.3em; display:none;" id="live-map-for-container">
+      Live Map for
+      <span id="current-map-for">
+	{% if current_user %}{{ current_user.nickname }}{% endif %}
+      </span>
       <span style="font-size:1em;">[<span class="pseudo-link" id="change-secret">Change</span>]</span>
+      [<a href="#" id="map-permalink">Permanent link to this map</a>]
     </div>
     <div id="secret-change-area" style="display:none;">
       <input name="theSecret" type="text" class="defaultText" value="" title="Enter secret" />
@@ -19,12 +23,19 @@
     </div>
   </div>
 
-  Number of points to display: <input type="text" value="30" style="width:50px;" id="num-points" />
-  <div class="button" id="apply-changes">Apply</div>
-  <div class="button" id="toggle-autorefresh">Enable Autorefresh</div>
+  <div id="maps-n-things" style="visibility:hidden;">
+    <div class="button" id="toggle-autorefresh">Enable Autorefresh</div>
 
-  <div id="map-canvas" style="height:600px;width:900px;"></div>
+    <div style="margin: 20px 0px;">
+      <div id="map-canvas" style="height:600px;width:900px;"></div>
+    </div>
 
+    Number of points to display: <input type="text" value="30" style="width:50px;" id="num-points" />
+    <div class="button" id="apply-changes">Apply</div>
+    <div>
+      Map broken? Click <a href="#" id="broken-map">here</a>.
+    </div>
+  </div>
 
 
   <!-- the template for the InfoWindow: -->

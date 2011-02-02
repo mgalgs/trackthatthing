@@ -48,7 +48,7 @@
 	  {% if current_user %}
 	    <span id="username"><a href="/live">{{ current_user.nickname }}</a></span> | <a href="{{ logout_url }}">Logout</a>
 	  {% else %}
-	    <a href="{{ login_url }}">Login</a>
+	    <a id="the-login-link" href="{{ login_url }}">Login</a>
 	  {% endif %}
 	</li>
       </ul>
@@ -57,7 +57,7 @@
 	{% block content %}{% endblock %}
       </div>
 
-      <div id="footer">This is the site footer</div>
+      <div id="footer">&copy; Mitchel Humpherys, Ben Zurcher {{ this_year }}</div>
     </div>
 
     {% if lsecret %}

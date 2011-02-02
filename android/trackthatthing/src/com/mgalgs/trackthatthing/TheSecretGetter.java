@@ -3,6 +3,7 @@ package com.mgalgs.trackthatthing;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,6 +50,13 @@ public class TheSecretGetter extends Activity {
 				finish();
 			}
 		});
-	}
+		
+		((Button) findViewById(R.id.btn_dont_have_secret)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TrackThatThing.BASE_URL+"/secret"));
+				startActivity(webIntent);
+			}
+		});
+	} /* eo onCreate */
 
 }

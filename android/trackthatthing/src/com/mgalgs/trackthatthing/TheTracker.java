@@ -17,12 +17,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.commonsware.cwac.locpoll.LocationPoller;
 
 public class TheTracker extends Activity {
 	private String secret_code;
 	private Button toggleTrackingButton;
+	private TextView theStatusTV;
 	private PendingIntent pi=null;
 	private AlarmManager mgr=null;
 	private boolean mCurrentlyTracking = false;
@@ -50,6 +52,7 @@ public class TheTracker extends Activity {
 		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 				SystemClock.elapsedRealtime(), getSleepTimeMS(), pi);
 		mCurrentlyTracking = true;
+		Toast.makeText(this, "Tracking started", Toast.LENGTH_LONG).show();
 
 		
 		
@@ -69,6 +72,8 @@ public class TheTracker extends Activity {
 			}
 		});
 		toggleTrackingButton.setText("Stop tracking");
+		
+		theStatusTV = (TextView) findViewById(R.id.the_status_label);
 		
 		// the sleep time spinner:
 		Spinner spinner = (Spinner) findViewById(R.id.spinner_update_rate);
@@ -97,6 +102,9 @@ public class TheTracker extends Activity {
     public void refreshDisplay() {
         TextView tv = (TextView) findViewById(R.id.the_secret_code);
         
+        theStatusTV.setText(mCurrentlyTracking ? "Tracking" : "Not Tracking");
+
+        
 		SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
 		secret_code = settings.getString(TrackThatThing.PREF_SECRET_CODE, null);
 		if (secret_code != null) {
@@ -113,13 +121,16 @@ public class TheTracker extends Activity {
 			mgr.cancel(pi);
 			mCurrentlyTracking = false;
 			toggleTrackingButton.setText("Start tracking");
+			Toast.makeText(this, "Tracking stopped", Toast.LENGTH_LONG).show();
 		} else {
 //			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 				SystemClock.elapsedRealtime(), getSleepTimeMS(), pi);
 			mCurrentlyTracking = true;
 			toggleTrackingButton.setText("Stop tracking");
+			Toast.makeText(this, "Tracking started", Toast.LENGTH_LONG).show();
 		}
+    	refreshDisplay();
     }
     
     public void updateTrackingPeriod() {

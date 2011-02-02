@@ -96,18 +96,22 @@ class MyBaseHandler(webapp.RequestHandler):
             secret_text = None
         template_values.update({
                 'current_user': self.current_user,
+                'this_year': datetime.datetime.now().year,
                 'logout_url': users.create_logout_url("/"),
                 'login_url': users.create_login_url("/"),
+                'login_to_secret_url': users.create_login_url("/secret"),
                 'is_admin': users.is_current_user_admin(),
                 'secret': secret_text
                 })
         self.response.out.write( template.render(template_path, template_values) )
+
     def write_string(self, st):
         'Prints string to output'
         if not self._already_output_headers:
             self.response.headers['Content-Type'] = 'text/plain'
             self._already_output_headers = True
         self.response.out.write(st)
+
     def debug_var(self, var):
         'Pretty prints variable to output'
         st = StringIO.StringIO()
@@ -238,6 +242,10 @@ class Download(MyBaseHandler):
     def get(self):
         self.render_me('download.html')
 
+class GetSecret(MyBaseHandler):
+    def get(self):
+        self.render_me('secret.html')
+
 class Beta(MyBaseHandler):
     def get(self):
         self.render_me('beta.html')
@@ -249,6 +257,7 @@ url_spec = [('/', MainPage),
             ('/help', Help),
             ('/about', About),
             ('/download', Download),
+            ('/secret', GetSecret),
             ('/new_test_point', NewTestPoint),
             ('/admin', Admin)]
 beta_spec = [(r'.*', Beta)]

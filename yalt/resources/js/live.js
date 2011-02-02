@@ -10,16 +10,33 @@ var get_secret = function() {
 	secret = $('input[name=secret]').val();
 	if (secret == $('input[name=secret]').attr('title')) {
 	    $("#secret-change-area").slideDown();
-	    return 'none';		// they haven't entered a secred yet...
+	    return null;		// they haven't entered a secred yet...
 	}
     }
     return secret;
 };
 
 var renew_map = function() {
+    var secret = get_secret();
+    if (secret === null) {
+	return;
+    }
+
+    if ( $("#get-started-hint").is(':visible')) {
+	$("#get-started-hint").fadeOut();
+    }
+    if ( $("#maps-n-things").css('visibility') != 'visible' ) {
+	$("#maps-n-things").css({visibility:'visible'});
+    }
+    if ( !$("#live-map-for-container").is(':visible') ) {
+	$("#live-map-for-container").fadeIn();
+    }
+
+    $("#map-permalink").attr('href', '/live?secret='+secret.replace(/ /g, ''));
+    $("#broken-map").attr('href', '/live?secret='+secret.replace(/ /g, ''));
+
     clear_map();
 
-    var secret = get_secret();
 
     // update the spot where the secret is displayed:
     $("#current-map-for").html(secret);
@@ -27,8 +44,12 @@ var renew_map = function() {
     // get the data and update the map
     var data_url = '/get?secret='+secret+'&n='+get_number_of_points();
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
-	draw_new_points(obj.data.locations);
-	recenter_map();
+	if (obj.success) {
+	    draw_new_points(obj.data.locations);
+	    recenter_map();
+	} else {
+	    $.gritter.add({title:'Error', text:obj.msg});
+	}
     });
 };
 
@@ -62,9 +83,11 @@ var close_info_windows = function() {
 };
 
 var draw_new_points = function(data) {
+    if (data.length == 0) return;
     var the_coords = [];
     var the_markers = [];
     var new_data_points = [];
+    $.gritter.add({title:'New Data', text:'We just got '+data.length+' new data point'+(data.length==1?'.':'s.')});
     for (i in data) {
 	var ll = new google.maps.LatLng(data[i].latitude,
 					data[i].longitude);
@@ -126,9 +149,11 @@ var draw_new_points = function(data) {
 var add_new_points = function() {
     var data = {
 	secret:get_secret(),
-	n:get_number_of_points(),
-	last:data_points[data_points.length-1]['raw'].date
+	n:get_number_of_points()
     };
+    if (data_points.length > 0) {
+	data['last'] = data_points[data_points.length-1]['raw'].date;
+    }
     var data_url = '/get?' + $.param(data);
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
 	var data = obj.data.locations.filter(function(o) {
@@ -163,14 +188,24 @@ var clear_map = function() {
 };
 
 var toggle_auto_refresh = function() {
+    var btn = $("#toggle-autorefresh");
     if (refreshing_task_is_running) {
 	refreshing_task_is_running = false;
 	clearInterval(refreshing_task_id);
-	$(this).children('.ui-button-text').html('Enable Autorefresh');
+	btn.children('.ui-button-text').html('Enable Auto-update');
+	$.gritter.add({title:'Notice', text:'Auto-update disabled.'})
     } else {
 	refreshing_task_is_running = true;
 	refreshing_task_id = setInterval(add_new_points, refreshing_task_period);
-	$(this).children('.ui-button-text').html('Disable Autorefresh');
+	btn.children('.ui-button-text').html('Disable Auto-update');
+	$.gritter.add({title:'Notice', text:'Auto-update enabled.'})
+    }
+};
+
+// Starts auto refreshing if it isn't already started
+var start_auto_refresh_maybe = function() {
+    if (!refreshing_task_is_running) {
+	toggle_auto_refresh();
     }
 };
 
@@ -195,17 +230,23 @@ $(function() {
 	mapTypeId: google.maps.MapTypeId.HYBRID
     });
 
+    // we use a custom event ('ttt-secret-changed') on the "body"
+    // element to trigger when the secret gets changed.
+
     $("#change-secret-go").button().click(function() {
-	renew_map();
+	$("body").trigger('ttt-secret-changed');
 	$("#secret-change-area").slideUp();
     });
 
     $("input[name=theSecret]").keyup(function(e) {
 	if (e.keyCode == 13) {
-	    renew_map();
+	    $("body").trigger('ttt-secret-changed');
 	    $("#secret-change-area").slideUp();
 	}
     });
+
+    $("body").bind('ttt-secret-changed', renew_map);
+
 
     $("#change-secret").click(function() {
 	$("#secret-change-area").slideToggle();
@@ -219,11 +260,33 @@ $(function() {
 	}
     });
 
+
     $("#toggle-autorefresh").click(toggle_auto_refresh);
 
-    // toggle_auto_refresh();
-
     google.maps.event.addListener(the_map, 'click', close_info_windows);
+
+    if (null === get_secret()) {
+	// show the 'get started' hint:
+	var login_url = $("#the-login-link").attr('href');
+	var pos = $("#secret-change-area").offset();
+	var n = $('<div/>')
+	    .html('<div><img style="padding-left:20px;" src="/resources/images/arrow.png" /></div><div>enter a secret to track someone else, or <a href="'+login_url+'">login</a>.</div>')
+	    .attr('id', 'get-started-hint')
+	    .css({
+		position:'absolute',
+		'text-align': 'left',
+		top:pos.top+50,
+		left:pos.left// ,
+		// background:'white',
+		// padding: '20px',
+		// width: '500px',
+		// height: '150px'
+	    })
+	    .appendTo("body");
+	$("body").one('ttt-secret-changed', function() {
+	    start_auto_refresh_maybe();
+	});
+    }
 
     renew_map();
 });
