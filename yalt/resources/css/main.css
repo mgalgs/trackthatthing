@@ -8,6 +8,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 body {
    text-align: center;
+   background: #D0D0D0;
 }
 a {
    text-decoration: none;
@@ -20,22 +21,22 @@ a:visited {
    width: 950px;
    margin: 0 auto;
    text-align: left;
-   border: 2px solid SeaGreen;
+   border: 2px solid #808080;
    padding: 25px;
    -moz-border-radius: 20px;
    -webkit-border-radius: 20px;
    -khtml-border-radius: 20px;
    border-radius: 20px;
+   background: snow;
 }
 #main-content {
    min-height: 300px;
 }
-#header {
-}
 #yalt-header {
-   font-size: 75px;
+   font-size: 55px;
    font-weight: bold;
    font-family: Georgia, Helvetica;
+   color: black;
 }
 #sub-header {
    font-size: 13px;
@@ -45,9 +46,9 @@ a:visited {
    text-align: center;
 }
 ul#menubar {
-   border: 5px solid SeaGreen;
+   border: 5px solid #808080;
    padding: 0px;
-   background: DarkGreen;
+   background: #505050;
 }
 ul#menubar li.menuitem, ul#menubar li.menuitem a {
    color: white;
@@ -57,7 +58,7 @@ ul#menubar li.menuitem {
    padding: 10px 0px;
 }
 ul#menubar li.menuitem a:hover {
-   background: Green;
+   background: #707070;
 }
 ul#menubar li.menuitem a {
    font-weight: bold;
@@ -105,6 +106,7 @@ div.instructions {
    background: LightBlue;
    border: 2px solid black;
    text-align: left;
+   padding: 12px;
 }
 #username {
    font-weight: bold;
@@ -124,4 +126,8 @@ div.instructions {
 #the-secret-code {
    font-weight: bold;
    text-size: larger;
+}
+.story {
+   width: 400px;
+   margin: 20px auto;
 }

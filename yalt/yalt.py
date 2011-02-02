@@ -263,7 +263,8 @@ url_spec = [('/', MainPage),
 beta_spec = [(r'.*', Beta)]
 
 dev_spec = url_spec
-live_spec = beta_spec
+# live_spec = beta_spec
+live_spec = url_spec
 
 application = webapp.WSGIApplication(
     dev_spec if is_dev_server else live_spec,

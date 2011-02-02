@@ -275,7 +275,7 @@ $(function() {
 	    .css({
 		position:'absolute',
 		'text-align': 'left',
-		top:pos.top+50,
+		top:pos.top+150,
 		left:pos.left// ,
 		// background:'white',
 		// padding: '20px',

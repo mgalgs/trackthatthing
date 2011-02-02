@@ -32,13 +32,17 @@
   <body>
 
     <div id="main-container">
-      <div id="header">
-	<span id="yalt-header">Track That Thing</span>
-	<span id="sub-header">{ Yet Another Location Tracker }</span>
-      </div>
+      <a href="/">
+	<div id="header">
+	  <span id="yalt-header">Track That Thing</span>
+	  <img src="/resources/images/ttt_s.png">
+	  <!-- <div id="sub-header">{ Yet Another Location Tracker }</div> -->
+	</div>
+      </a>
       <ul id="menubar">
 	<li class="menuitem"><a href="/">Home</a></li>
 	<li class="menuitem"><a href="/live" style="font-weight: bold;">Live Map</a></li>
+	<li class="menuitem"><a href="/download">Download</a></li>
 	<li class="menuitem"><a href="/about">About</a></li>
 	<li class="menuitem"><a href="/help">Help</a></li>
 	{% if is_admin %}
@@ -57,7 +61,7 @@
 	{% block content %}{% endblock %}
       </div>
 
-      <div id="footer">&copy; Mitchel Humpherys, Ben Zurcher {{ this_year }}</div>
+      <div id="footer">&copy; <a href="http://mgalgs.blogspot.com">Mitchel Humpherys</a>, <a href="http://benzurcher.com">Ben Zurcher</a> {{ this_year }}</div>
     </div>
 
     {% if lsecret %}
