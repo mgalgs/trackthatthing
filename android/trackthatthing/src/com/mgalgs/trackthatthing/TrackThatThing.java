@@ -16,6 +16,7 @@ public class TrackThatThing extends Activity {
 	public static final String PREFS_NAME = "TTTPrefsFile";
 	public static final String PREF_SECRET_CODE = "secret_code";
 	public static String PREF_SLEEP_TIME = "sleep_time";
+	public static String PREF_FIRST_LAUNCH = "first_launch";
 	public static long DEFAULT_SLEEP_TIME = 30; //seconds
 	public static final String BASE_URL = "http://www.trackthatthing.com";
 //	public static final String BASE_URL = "http://firsthome.homelinux.org:8080";
@@ -26,6 +27,10 @@ public class TrackThatThing extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Show EULA:
+        Eula.show(this);
+
         setContentView(R.layout.main);
         
         Button button = (Button) findViewById(R.id.button);
@@ -56,10 +61,10 @@ public class TrackThatThing extends Activity {
 		secret_code = settings.getString(PREF_SECRET_CODE, null);
 		
 		if (secret_code != null) {
-			Log.i(TAG, "Got secret code: " + secret_code);
+//			Log.i(TAG, "Got secret code: " + secret_code);
 			launchTracker();
 		} else {
-			Log.i(TAG, "No secret code. Launching secret getter: " + new Boolean(!dont_try_to_get_secret).toString());
+//			Log.i(TAG, "No secret code. Launching secret getter: " + new Boolean(!dont_try_to_get_secret).toString());
 			if (!dont_try_to_get_secret) {
 				launchSecretGetter();
 			} else {

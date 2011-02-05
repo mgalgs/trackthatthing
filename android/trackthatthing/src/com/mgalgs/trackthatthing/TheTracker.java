@@ -32,7 +32,7 @@ public class TheTracker extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(TrackThatThing.TAG, "TheTracker.onCreate being called");
+		//Log.i(TrackThatThing.TAG, "TheTracker.onCreate being called");
 
 		setContentView(R.layout.the_tracker);
 		
@@ -89,7 +89,7 @@ public class TheTracker extends Activity {
 
     @Override
 	protected void onStart() {
-    	Log.i(TrackThatThing.TAG, "TheTracker.onStart being called");
+    	//Log.i(TrackThatThing.TAG, "TheTracker.onStart being called");
 		super.onStart();
 	}
 
@@ -115,7 +115,7 @@ public class TheTracker extends Activity {
     }
     
     public void toggleTracking() {
-    	Log.d(TrackThatThing.TAG, "toggling tracking.");
+    	//Log.d(TrackThatThing.TAG, "toggling tracking.");
 
     	if (mCurrentlyTracking) {
 			mgr.cancel(pi);
@@ -134,7 +134,7 @@ public class TheTracker extends Activity {
     }
     
     public void updateTrackingPeriod() {
-    	Log.d(TrackThatThing.TAG, "updating tracking period.");
+    	//Log.d(TrackThatThing.TAG, "updating tracking period.");
     	if (mCurrentlyTracking) {
     		mgr.cancel(pi);
 			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -145,7 +145,7 @@ public class TheTracker extends Activity {
     
 	@Override
 	protected void onDestroy() {
-		Log.i(TrackThatThing.TAG, "in TheTracker.onDestroy");
+		//Log.i(TrackThatThing.TAG, "in TheTracker.onDestroy");
 		super.onDestroy();
 	}
 	
@@ -153,28 +153,28 @@ public class TheTracker extends Activity {
 
 	@Override
 	protected void onPause() {
-		Log.i(TrackThatThing.TAG, "in TheTracker.onPause");
+		//Log.i(TrackThatThing.TAG, "in TheTracker.onPause");
 		super.onPause();
 	}
 
 
 	@Override
 	protected void onRestart() {
-		Log.i(TrackThatThing.TAG, "in TheTracker.onRestart");
+		//Log.i(TrackThatThing.TAG, "in TheTracker.onRestart");
 		super.onRestart();
 	}
 
 
 	@Override
 	protected void onResume() {
-		Log.i(TrackThatThing.TAG, "in TheTracker.onResume");
+		//Log.i(TrackThatThing.TAG, "in TheTracker.onResume");
 		super.onResume();
 	}
 
 
 	@Override
 	protected void onStop() {
-		Log.i(TrackThatThing.TAG, "in TheTracker.onStop");
+		//Log.i(TrackThatThing.TAG, "in TheTracker.onStop");
 		super.onStop();
 	}
 
@@ -216,7 +216,7 @@ public class TheTracker extends Activity {
 				}
 				new_sleep_time_s = Long.valueOf(stuff[0]) * multiplier;
 				
-				Log.i(TrackThatThing.TAG, "Setting update rate to: " + choice + " ("+Long.toString(new_sleep_time_s)+" seconds)");
+				//Log.i(TrackThatThing.TAG, "Setting update rate to: " + choice + " ("+Long.toString(new_sleep_time_s)+" seconds)");
 				
 				SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
 				SharedPreferences.Editor editor = settings.edit();

@@ -3,6 +3,7 @@
     <string name="hello">Hello World, TrackThatThing!</string>
     <string name="app_name">Track That Thing Beta</string>
     <string name="start_tracking">Track This Thing!</string>
+    <string name="help_start_button">(press to start)</string>
     <string name="the_tracker">This is the tracker screen!</string>
     <string name="the_secret_getter">This is the secret getter screen!</string>
     <string name="save_secret">Go!</string>
@@ -21,6 +22,10 @@
 	
 	<string name="label_status">Status:</string>
 	
+	<string name="eula_refuse">Refuse</string>
+	<string name="eula_accept">Accept</string>
+	<string name="eula_title">End User License Agreement</string>
+
 	<string-array name="array_update_rates">
 		<item>10 seconds</item>
 		<item>30 seconds</item>
