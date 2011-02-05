@@ -51,13 +51,16 @@ public class LocationReceiver extends BroadcastReceiver {
 				qs.add("acc", Float.toString(acc));
 				qs.add("speed", Float.toString(speed));
 				
-				JSONObject json = RestClient.connect(qs.toString());
 				
 				try {
+					JSONObject json = RestClient.connect(qs.toString());
 					Log.i(TrackThatThing.TAG,
 							"Got the following response from the server: " + json.getString("msg"));
 				} catch (JSONException e) {
 					Log.i(TrackThatThing.TAG, "couldn't get \"msg\" out of JSON object...");
+					e.printStackTrace();
+				} catch (Exception e) {
+					Log.e(TrackThatThing.TAG, "Something went wrong while trying to make the JSON object...");
 					e.printStackTrace();
 				}
 

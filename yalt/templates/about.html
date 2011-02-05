@@ -3,29 +3,84 @@
 
 <div class="story">
   <h4>Background</h4>
-  <p>
+  <div class="story-par">
     I recently needed to share my location in real-time with my wife
-    using my Android phone. All the existing location tracking
+    using my Android phone. Most of the existing location tracking
     services were disgusting and difficult to set up, and none of the
-    free ones were real time. So I set out to make a better, free-er
+    free ones were real time*, plus I needed an excuse to get started
+    with Android development. So I set out to make a better, free-er
     alternative; and <i>Track That Thing</i> was born.
-  </p>
+    <div class="quiet" style="padding: 10px; font-size:11px;">
+      * I've since discovered <a
+      href="http://www.glympse.com/">glympse</a>, which really is
+      exactly the kind of thing I was hoping to find in the first
+      place... But now TTT is done and I still think it's worth
+      sharing :)
+    </div>
+  </div>
 
   <h4>Credits</h4>
-  <p>
-    I need to give credit to a few
-    people. <a href="http://benzurcher.com">Ben Zurcher</a>, for
-    helping me accomplish my goal of making this site less disgusting
-    than the
-    alternatives. <a href="https://github.com/commonsguy">Mark
-    Murphy</a>, for his
-    wonderful <a href="https://github.com/commonsguy/cwac-locpoll">CWAC
-    Location Poller</a> module, without which I would still be
-    debugging Android
-    IntentServices. <a href="http://penandthink.com/">Joseph Wain</a>,
-    for his awesome <a href="http://glyphish.com/">glyphish</a> icon
-    set.
-  </p>
+  <div class="story-par">
+    I need to give credit to a few people. <a href="http://benzurcher.com">Ben Zurcher</a>, for helping me make
+    this site less disgusting than the alternatives. <a href="https://github.com/commonsguy">Mark Murphy</a>, for his
+    wonderful <a href="https://github.com/commonsguy/cwac-locpoll">CWAC Location
+    Poller</a> module, without which I would still be debugging
+    Android IntentServices. <a href="http://penandthink.com/">Joseph
+    Wain</a>, for his awesome <a
+    href="http://glyphish.com/">glyphish</a> icon set.
+  </div>
+
+  <h4>Developers</h4>
+  <div class="story-par">
+    First of all, <i>Track That Thing</i> is open source. You can get
+    the source at the <a href="https://github.com/mgalgs/trackthatthing">Track That Thing
+    github page</a>. If you're looking for an Android or Google App
+    Engine example application (or project to contribute to :) ), then
+    there ya go.
+  </div>
+  <div class="story-par">
+    <h6>Saving to <i>Track That Thing</i></h6> Track That Thing uses a
+    pseudo-RESTful API to store users' locations. You can store
+    locations yourself by making an HTTP GET* request with the
+    following parameters:
+    <code>lat</code>,
+    <code>lon</code>,
+    <code>acc</code>,
+    <code>speed</code> and
+    <code>secret</code>. Something like:
+    <div class="code-block">
+      http://www.trackthatthing.com/put?secret=rain+bend+9a5&amp;lat=33.989070653915405&amp;lon=-117.3390644788742&amp;acc=4.0&amp;speed=0.0
+    </div>
+
+    would save a data point associated with the secret "rain bend
+    9a5". If you have a set of tennis shoes with a GPS module and
+    network, feel free track those things using the <i>Track That
+    Thing</i> "API" :).
+    <div class="quiet" style="padding: 10px; font-size:11px;">* Yeah, a GET request to save. That's why I say "pseudo-RESTful"...</div>
+  </div>
+  <div class="story-par">
+    <h6>Retrieving from <i>Track That Thing</i></h6>
+    You can pull <i>Track That Thing</i> data by making an HTTP GET
+    request with the following parameters:
+    <code>secret</code>,
+    <code>n</code> (optional) and
+    <code>last</code> (optional).
+
+    <code>n</code> limits how many data points you'd like to
+    pull. <code>last</code> sets a bound on how far back in time you'd
+    like to pull data. Something like:
+    <div class="code-block">
+      http://localhost:8080/get?secret=rain+bend+9a5&n=30&last=2011-02-02+05%3A00%3A08.409676
+    </div>
+    would grab the last 30 data points, going no further back in time
+    than that garbledy date (which was gleaned from the response of an
+    earlier request), and would result in a JSON object of the
+    following format:
+    <div class="code-block">
+      {"msg": "Success!", "data": {"locations": [{"longitude": "-117.339096665", "latitude": "33.9890491962", "user": "test@example.com", "date": "2011-02-02 05:00:08.409676", "speed": "0.0", "id": 406, "accuracy": "48.0"}]}, "success": true}
+    </div>
+  </div>
+
 </div>
 
 {% endblock %}

@@ -54,6 +54,7 @@ public class RestClient {
 		JSONObject json = null;
 		HttpClient httpclient = new DefaultHttpClient();
 
+		Log.i(TrackThatThing.TAG, "We're going to make a request to: " + url);
 		// Prepare a request object
 		HttpGet httpget = new HttpGet(url);
 
@@ -62,7 +63,7 @@ public class RestClient {
 		try {
 			response = httpclient.execute(httpget);
 			// Examine the response status
-			Log.i(TrackThatThing.TAG, response.getStatusLine().toString());
+			Log.i(TrackThatThing.TAG, "here is the response status line we got:\n" + response.getStatusLine().toString());
 
 			// Get hold of the response entity
 			HttpEntity entity = response.getEntity();
@@ -74,12 +75,11 @@ public class RestClient {
 				// A Simple JSON Response Read
 				InputStream instream = entity.getContent();
 				String result = convertStreamToString(instream);
-				Log.i(TrackThatThing.TAG, result);
+				Log.i(TrackThatThing.TAG, "here is the result:\n" + result);
 
 				// A Simple JSONObject Creation
 				json = new JSONObject(result);
-				Log.i(TrackThatThing.TAG, "<jsonobject>\n" + json.toString()
-						+ "\n</jsonobject>");
+				Log.i(TrackThatThing.TAG, "Here's the json object:\n" + json.toString());
 
 				// A Simple JSONObject Parsing
 //				JSONArray nameArray = json.names();
@@ -102,6 +102,8 @@ public class RestClient {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

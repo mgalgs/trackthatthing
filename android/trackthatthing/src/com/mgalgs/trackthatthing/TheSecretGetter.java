@@ -51,12 +51,16 @@ public class TheSecretGetter extends Activity {
 			}
 		});
 		
-		((Button) findViewById(R.id.btn_dont_have_secret)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TrackThatThing.BASE_URL+"/secret"));
-				startActivity(webIntent);
-			}
-		});
+		((Button) findViewById(R.id.btn_dont_have_secret)).setOnClickListener(new MyOnClickGetSecret());
+		((Button) findViewById(R.id.btn_forgot_secret)).setOnClickListener(new MyOnClickGetSecret());
 	} /* eo onCreate */
+	
+	private class MyOnClickGetSecret implements OnClickListener {
+		public void onClick(View v) {
+			Intent webIntent = new Intent(Intent.ACTION_VIEW,
+					Uri.parse(TrackThatThing.BASE_URL + "/secret"));
+			startActivity(webIntent);
+		}
+	}
 
 }

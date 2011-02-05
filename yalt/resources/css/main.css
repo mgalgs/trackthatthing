@@ -37,6 +37,7 @@ a:visited {
    font-weight: bold;
    font-family: Georgia, Helvetica;
    color: black;
+   margin-left: 30px;
 }
 #sub-header {
    font-size: 13px;
@@ -128,6 +129,29 @@ div.instructions {
    text-size: larger;
 }
 .story {
-   width: 400px;
+   width: 500px;
    margin: 20px auto;
+}
+.story .story-par {
+   background: GainsBoro;
+   padding: 15px;
+   margin-bottom: 10px;
+   border-radius: 10px;
+   -moz-border-radius: 10px;
+}
+.story h4 {
+   margin-top: 30px;
+}
+code {
+   font-family: monospace;
+}
+.code-block {
+   font-family: monospace;
+   padding: 10px;
+   margin: 10px 20px;
+   border: 1px dashed black;
+   background: LightGrey;
+}
+.quiet {
+   color: gray;
 }

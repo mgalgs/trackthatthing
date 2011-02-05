@@ -1,2 +1,10 @@
-* Pretty up the android app
+* Showstoppers
+** Android
+*** TODO "Launch GPS Settings" dialog
+** Web
+*** DONE Meta tags in the HEAD
 
+* Etc.
+** Android
+*** DONE Pretty up the android app
+*** TODO Communicate with the background process for "status" messages

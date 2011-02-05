@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
+    <title>{% block title %}Track That Thing{% endblock %}</title>
+    <meta name="description" content="Free GPS Location Tracking Service for Android" />
+    <meta name="keywords" content="GPS,Location Tracking,Tracking,Android,Google App Engine,GAE,Location,Real-time,Real-time Location Tracking,Real time,Real time location tracking" />
 
     <!-- jquery ui css: -->
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/themes/base/jquery-ui.css" type="text/css" media="screen" />
@@ -28,16 +31,32 @@
 	Icons on map pushpins by Joseph Wain: http://www.glyphish.com/
     -->
 
+    <!-- Analytics stuff: -->
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-21202725-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
   </head>
   <body>
 
     <div id="main-container">
       <a href="/">
+
 	<div id="header">
-	  <span id="yalt-header">Track That Thing</span>
-	  <img src="/resources/images/ttt_s.png">
-	  <!-- <div id="sub-header">{ Yet Another Location Tracker }</div> -->
+	  <table>
+	    <tr>
+	      <td><img src="/resources/images/ttt_s.png"></td>
+	      <td><div id="yalt-header">Track That Thing</div></td>
+	    </tr>
+	  </table>
 	</div>
+
       </a>
       <ul id="menubar">
 	<li class="menuitem"><a href="/">Home</a></li>

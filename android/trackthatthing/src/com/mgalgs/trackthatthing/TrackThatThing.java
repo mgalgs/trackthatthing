@@ -17,8 +17,8 @@ public class TrackThatThing extends Activity {
 	public static final String PREF_SECRET_CODE = "secret_code";
 	public static String PREF_SLEEP_TIME = "sleep_time";
 	public static long DEFAULT_SLEEP_TIME = 30; //seconds
-//	public static final String BASE_URL = "http://trackthatthing.com";
-	public static final String BASE_URL = "http://firsthome.homelinux.org:8080";
+	public static final String BASE_URL = "http://www.trackthatthing.com";
+//	public static final String BASE_URL = "http://firsthome.homelinux.org:8080";
 	
 	private String secret_code;
 	

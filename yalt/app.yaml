@@ -22,5 +22,9 @@ handlers:
 - url: /resources
   static_dir: resources
 
+- url: /favicon.ico
+  static_files: resources/images/favicon.ico
+  upload: resources/images/favicon.ico
+
 - url: /.*
   script: yalt.py
