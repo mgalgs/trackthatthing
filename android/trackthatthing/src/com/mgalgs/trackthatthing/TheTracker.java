@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,6 +62,13 @@ public class TheTracker extends Activity {
 		btn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				launchSecretGetter();
+			}
+		});
+		
+		Button shareBtn = (Button) findViewById(R.id.btn_share_location);
+		shareBtn.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				shareSecret();
 			}
 		});
 
@@ -230,4 +238,19 @@ public class TheTracker extends Activity {
 				
 			}
 		}
+	
+	private void shareSecret()
+	{
+		String subject = "See where I'm at in real-time!";
+		String bodyText = String.format("<div>Hey! I'm using <a href=\"http://www.trackthatthing.com\">TrackThatThing</a> " +
+			"to track my location.</div><div>Check out the real-time map of my location " +
+			"<a href=\"http://www.trackthatthing.com/live?secret=%s\">here</a>.</div>", secret_code);
+
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+		emailIntent.setType("text/html");
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(bodyText));
+		startActivity(Intent.createChooser(emailIntent, "Email:"));
+
+	}
 }

@@ -17,6 +17,9 @@ package com.mgalgs.trackthatthing;
 //import org.json.JSONException;
 //import org.json.JSONObject;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,16 +55,16 @@ public class LocationReceiver extends BroadcastReceiver {
 				qs.add("speed", Float.toString(speed));
 				
 				
-//				try {
-//					JSONObject json = RestClient.connect(qs.toString());
-					//Log.i(TrackThatThing.TAG, "Got the following response from the server: " + json.getString("msg"));
-//				} catch (JSONException e) {
-//					Log.e(TrackThatThing.TAG, "couldn't get \"msg\" out of JSON object...");
-//					e.printStackTrace();
-//				} catch (Exception e) {
-//					Log.e(TrackThatThing.TAG, "Something went wrong while trying to make the JSON object...");
-//					e.printStackTrace();
-//				}
+				try {
+					JSONObject json = RestClient.connect(qs.toString());
+					Log.i(TrackThatThing.TAG, "Got the following response from the server: " + json.getString("msg"));
+				} catch (JSONException e) {
+					Log.e(TrackThatThing.TAG, "couldn't get \"msg\" out of JSON object...");
+					e.printStackTrace();
+				} catch (Exception e) {
+					Log.e(TrackThatThing.TAG, "Something went wrong while trying to make the JSON object...");
+					e.printStackTrace();
+				}
 
 				msg=loc.toString();
 			}

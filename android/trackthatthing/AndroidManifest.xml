@@ -10,7 +10,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name="TheTracker"></activity>
+		<activity android:screenOrientation="portrait" android:name="TheTracker"></activity>
 		<activity android:name="TheSecretGetter"></activity>
 		<receiver android:name="LocationReceiver"></receiver>
 		<receiver android:name="com.commonsware.cwac.locpoll.LocationPoller" />

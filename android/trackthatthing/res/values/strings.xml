@@ -9,6 +9,7 @@
     <string name="save_secret">Go!</string>
     <string name="btn_text_dont_have_secret">I don\'t have one yet.</string>
     <string name="btn_text_forgot_secret">I forgot mine.</string>
+    <string name="btn_text_share_location">Share location</string>
     <string name="enter_your_secret">Enter your secret code:</string>
     <string name="the_secret_code_label">Using secret code</string>
     <string name="change_secret_button">Change</string>
