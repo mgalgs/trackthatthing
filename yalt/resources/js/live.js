@@ -89,7 +89,7 @@ var close_info_windows = function() {
 
 var draw_new_points = function(data) {
     if (data.length == 0) {
-	$("#how-many-points").html("0");
+	$("#how-many-points").html(current_overlays.length-1);
 	return;
     }
     var the_coords = [];
