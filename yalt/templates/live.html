@@ -30,8 +30,37 @@
       <div id="map-canvas" style="height:600px;width:900px;"></div>
     </div>
 
-    Number of points to display: <input type="text" value="30" style="width:50px;" id="num-points" />
+    <div>
+      Max number of points to display: <input type="text" value="30" style="width:50px;" id="num-points" />
+    </div>
+    <div>
+      Discard points over
+      <select id="oldness">
+	<option value="30">30 seconds</option>
+	<option value="60">1 minute</option>
+	<option value="180">3 minutes</option>
+	<option value="300">5 minutes</option>
+	<option value="600">10 minutes</option>
+	<option value="1800" selected="selected">30 minutes</option>
+	<option value="3600">1 hour</option>
+	<option value="21600">6 hours</option>
+	<option value="43200">12 hours</option>
+	<option value="86400">1 day</option>
+	<option value="172800">2 days</option>
+	<option value="259200">3 days</option>
+	<option value="604800">1 week</option>
+	<option value="1209600">2 weeks</option>
+	<option value="2592000">1 month</option>
+	<option value="31536000000000">1 million years</option>
+      </select>
+      old.
+    </div>
     <div class="button" id="apply-changes">Apply</div>
+    <br/>
+    <div>
+      Currently showing <span id="how-many-points">0</span> points.
+    </div>
+    <br/>
     <div>
       Map broken? Click <a href="#" id="broken-map">here</a>.
     </div>

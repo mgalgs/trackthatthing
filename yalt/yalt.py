@@ -144,6 +144,13 @@ class GetData(MyBaseHandler):
                 lq = Location.all().filter('user = ', user)
                 if 'last' in self.request.arguments():
                     lq.filter('date > ', str_to_date(self.request.get('last')) )
+                if 'oldness' in self.request.arguments():
+                    oldness = int(self.request.get('oldness'))
+                    if oldness > 0 and oldness <= 2592000:
+                        lq.filter('date > ',
+                                  datetime.datetime.now() -
+                                  datetime.timedelta(0,oldness,0)
+                                  )
                 locations = lq.order('-date').fetch(num_points)
                 logging.info( 'giving ' + str(num_points) + ' points: ' + str(len(locations)) )
                 obj = {

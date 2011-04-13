@@ -2,6 +2,11 @@ var get_number_of_points = function() {
     return $("#num-points").val();
 };
 
+var get_oldness = function() {
+    var val = $("#oldness").val();
+    return val !== '' ? val-0 : -1;
+};
+
 var get_secret = function() {
     // first try for the one on the page:
     var secret = $('input[name=theSecret]').val();
@@ -42,7 +47,7 @@ var renew_map = function() {
     $("#current-map-for").html(secret);
 
     // get the data and update the map
-    var data_url = '/get?secret='+secret+'&n='+get_number_of_points();
+    var data_url = '/get?secret='+secret+'&n='+get_number_of_points()+'&oldness='+get_oldness();
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
 	if (obj.success) {
 	    draw_new_points(obj.data.locations);
@@ -83,7 +88,10 @@ var close_info_windows = function() {
 };
 
 var draw_new_points = function(data) {
-    if (data.length == 0) return;
+    if (data.length == 0) {
+	$("#how-many-points").html("0");
+	return;
+    }
     var the_coords = [];
     var the_markers = [];
     var new_data_points = [];
@@ -143,13 +151,16 @@ var draw_new_points = function(data) {
 
 
     the_path.setMap(the_map);
+
+    $("#how-many-points").html(current_overlays.length-1);
 };
 
 
 var add_new_points = function() {
     var data = {
 	secret:get_secret(),
-	n:get_number_of_points()
+	n:get_number_of_points(),
+	oldness:get_oldness()
     };
     if (data_points.length > 0) {
 	data['last'] = data_points[data_points.length-1]['raw'].date;
@@ -223,12 +234,14 @@ var refreshing_task_id = null;
 var refreshing_task_period = 5000; // ms
 
 
+// main function:
 $(function() {
     the_map = new google.maps.Map($("#map-canvas")[0], {
 	zoom: 17,
 	center: new google.maps.LatLng(33.989135,-117.339123),
 	mapTypeId: google.maps.MapTypeId.HYBRID
     });
+
 
     // we use a custom event ('ttt-secret-changed') on the "body"
     // element to trigger when the secret gets changed.
