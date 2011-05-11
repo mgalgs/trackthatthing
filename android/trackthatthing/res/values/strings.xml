@@ -22,6 +22,7 @@
 	<string name="notify_title">Track That Thing</string>
 	
 	<string name="label_status">Status:</string>
+	<string name="label_last_update">Last update:</string>
 	
 	<string name="eula_refuse">Refuse</string>
 	<string name="eula_accept">Accept</string>

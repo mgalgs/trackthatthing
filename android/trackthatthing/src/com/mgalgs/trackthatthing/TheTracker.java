@@ -3,7 +3,10 @@ package com.mgalgs.trackthatthing;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -29,6 +32,7 @@ public class TheTracker extends Activity {
 	private PendingIntent pi=null;
 	private AlarmManager mgr=null;
 	private boolean mCurrentlyTracking = false;
+	static final String IF_LOC_UPDATE = "com.mgalgs.trackthatthing.LOC_UPDATE";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,7 @@ public class TheTracker extends Activity {
 		pi = PendingIntent.getBroadcast(this, 0, i, 0);
 //		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 		mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime(), getSleepTimeMS(), pi);
+				SystemClock.elapsedRealtime(), getSleepTime_MS(), pi);
 		mCurrentlyTracking = true;
 		Toast.makeText(this, "Tracking started", Toast.LENGTH_LONG).show();
 
@@ -120,6 +124,10 @@ public class TheTracker extends Activity {
 		} else {
 			Log.e(TrackThatThing.TAG, "Weird, they got to the tracker screen without a secret code...");
 		}
+		
+		String last_update = settings.getString(TrackThatThing.PREF_LAST_LOC_TIME, "Trying to get GPS lock...");
+		tv = (TextView) findViewById(R.id.the_last_update_label);
+		tv.setText(last_update);
     }
     
     public void toggleTracking() {
@@ -133,7 +141,7 @@ public class TheTracker extends Activity {
 		} else {
 //			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime(), getSleepTimeMS(), pi);
+				SystemClock.elapsedRealtime(), getSleepTime_MS(), pi);
 			mCurrentlyTracking = true;
 			toggleTrackingButton.setText("Stop tracking");
 			Toast.makeText(this, "Tracking started", Toast.LENGTH_LONG).show();
@@ -146,7 +154,7 @@ public class TheTracker extends Activity {
     	if (mCurrentlyTracking) {
     		mgr.cancel(pi);
 			mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime(), getSleepTimeMS(), pi);
+				SystemClock.elapsedRealtime(), getSleepTime_MS(), pi);
     	}
     }
     
@@ -162,6 +170,7 @@ public class TheTracker extends Activity {
 	@Override
 	protected void onPause() {
 		//Log.i(TrackThatThing.TAG, "in TheTracker.onPause");
+		unregisterReceiver(locUpdateReceiver);
 		super.onPause();
 	}
 
@@ -176,7 +185,10 @@ public class TheTracker extends Activity {
 	@Override
 	protected void onResume() {
 		//Log.i(TrackThatThing.TAG, "in TheTracker.onResume");
+		registerReceiver(locUpdateReceiver, new IntentFilter(IF_LOC_UPDATE));
 		super.onResume();
+		
+		refreshDisplay();
 	}
 
 
@@ -197,13 +209,13 @@ public class TheTracker extends Activity {
         }
 	}
 	
-	private long getSleepTimeS() {
+	private long getSleepTime_S() {
 		SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
 		return settings.getLong(TrackThatThing.PREF_SLEEP_TIME, TrackThatThing.DEFAULT_SLEEP_TIME);
 	}
 	
-	private long getSleepTimeMS() {
-		return getSleepTimeS()*1000;
+	private long getSleepTime_MS() {
+		return getSleepTime_S()*1000;
 	}
 	
 	public class MyOnItemSelectedListener implements OnItemSelectedListener {
@@ -253,4 +265,13 @@ public class TheTracker extends Activity {
 		startActivity(Intent.createChooser(emailIntent, "Email:"));
 
 	}
+	
+	
+	public BroadcastReceiver locUpdateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			refreshDisplay();
+			this.setResultCode(Activity.RESULT_OK);
+		}
+	};
 }

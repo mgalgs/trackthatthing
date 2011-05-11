@@ -33,6 +33,17 @@
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:textStyle="bold" />
 		</LinearLayout>
+		
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="horizontal" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:paddingTop="20dp">
+			<TextView android:text="@string/label_last_update"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:paddingRight="10sp" />
+			<TextView android:id="@+id/the_last_update_label"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:textStyle="bold" />
+		</LinearLayout>
 
 	</LinearLayout>
 

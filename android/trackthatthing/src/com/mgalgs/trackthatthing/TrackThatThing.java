@@ -1,10 +1,15 @@
 package com.mgalgs.trackthatthing;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.Settings;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -13,10 +18,12 @@ import android.widget.Toast;
 public class TrackThatThing extends Activity {
 	public static final String TAG = "TrackThatThing Message";
 	public static final int GET_SECRET = 0;
+	public static final int RESULT_CHANGE_GPS_SETTINGS = 1;
 	public static final String PREFS_NAME = "TTTPrefsFile";
 	public static final String PREF_SECRET_CODE = "secret_code";
-	public static String PREF_SLEEP_TIME = "sleep_time";
-	public static String PREF_FIRST_LAUNCH = "first_launch";
+	public static final String PREF_SLEEP_TIME = "sleep_time";
+	public static final String PREF_FIRST_LAUNCH = "first_launch";
+	public static final String PREF_LAST_LOC_TIME = "last_loc";
 	public static long DEFAULT_SLEEP_TIME = 30; //seconds
 	public static final String BASE_URL = "http://www.trackthatthing.com";
 //	public static final String BASE_URL = "http://firsthome.homelinux.org:8080";
@@ -37,13 +44,47 @@ public class TrackThatThing extends Activity {
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Log.i(TAG, "Thanks for clicking our little tracker friend man");
 				launchStuff();
 			}
 		});
+
+    } // eo onCreate
+    
+    public boolean gpsIsEnabled() {
+		final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
+
+    // from http://stackoverflow.com/questions/843675/how-do-i-find-out-if-the-gps-of-an-android-device-is-enabled/843716#843716
+	private void buildAlertMessageNoGps() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(
+				"Your GPS is disabled, do you want to enable it?")
+				.setCancelable(false)
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							public void onClick(
+									final DialogInterface dialog,
+									final int id) {
+								launchGPSOptions();
+							}
+						})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog,
+							final int id) {
+						dialog.cancel();
+					}
+				});
+		final AlertDialog alert = builder.create();
+		alert.show();
+	}
     
     public void launchTracker() {
+    	if (!gpsIsEnabled()) {
+    		buildAlertMessageNoGps();
+    		return;
+    	}
+    	
         Intent i = new Intent(this, TheTracker.class);
         i.putExtra("auto_start_tracking", true);
         startActivity(i);
@@ -87,10 +128,27 @@ public class TrackThatThing extends Activity {
         case GET_SECRET:
         	launchStuff(true);
         	break;
+        case RESULT_CHANGE_GPS_SETTINGS:
+//        	for some reason launching the next activity isn't working here...
+//        	runOnUiThread(new Runnable() {
+//				public void run() {
+//					launchStuff();
+//				}
+//			});
+        	break;
         }
 	}
-    
-    
-    
+	
+	
+	private void launchGPSOptions() {
+		final ComponentName toLaunch = new ComponentName(
+				"com.android.settings", "com.android.settings.SecuritySettings");
+		final Intent intent = new Intent(
+				Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		intent.setComponent(toLaunch);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivityForResult(intent, RESULT_CHANGE_GPS_SETTINGS);
+	}    
 
 }
