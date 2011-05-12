@@ -27,6 +27,7 @@
 	<string name="eula_refuse">Refuse</string>
 	<string name="eula_accept">Accept</string>
 	<string name="eula_title">End User License Agreement</string>
+	
 
 	<string-array name="array_update_rates">
 		<item>10 seconds</item>

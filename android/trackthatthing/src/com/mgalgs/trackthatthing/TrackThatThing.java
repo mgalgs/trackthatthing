@@ -39,6 +39,12 @@ public class TrackThatThing extends Activity {
         // Show EULA:
         Eula.show(this);
 
+		SharedPreferences settings = getSharedPreferences(
+				TrackThatThing.PREFS_NAME, MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(PREF_LAST_LOC_TIME);
+		editor.commit();
+        
         setContentView(R.layout.main);
         
         Button button = (Button) findViewById(R.id.button);
