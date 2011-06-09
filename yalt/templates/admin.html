@@ -14,13 +14,23 @@
       <th>Readable Secret</th>
       <th>Secret</th>
       <th>Iterations to Find Secret</th>
+      <th>Data Points</th>
     </tr>
-    {% for secret in secrets %}
+    {% for d in data %}
       <tr>
-	<td>{{ secret.user.nickname }}</td>
-	<td>{{ secret.secret_readable }}</td>
-	<td><a href="/view_data?secret={{ secret.secret }}">{{ secret.secret }}</a></td>
-	<td>{{ secret.niters }}</td>
+	<td>{{ d.secret.user.nickname }}</td>
+	<td>{{ d.secret.secret_readable }}</td>
+	<td>{{ d.secret.secret }}</td>
+	<td>{{ d.secret.niters }}</td>
+	<td>
+	  <a href="/view_data?secret={{ d.secret.secret }}">
+	    {% if d.num_locations > 999 %}
+	    Over 1,000
+	    {% else %}
+	    {{ d.num_locations }}
+	    {% endif %}
+	  </a>
+	</td>
       </tr>
     {% endfor %}
   </table>

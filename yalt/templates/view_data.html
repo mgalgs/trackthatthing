@@ -3,7 +3,8 @@
   <script type="text/javascript" src="/resources/js/admin.js"></script>
 {% endblock %}
 {% block content %}
-  <h5>Data for Secret {{ secret }}</h5>
+  <h5>Data for Secret {{ secret_for_page }}</h5>
+  <p>(Most recent 500 data points)</p>
 
 {% if success %}
   <table cellspacing="0" cellpadding="8" border="1">

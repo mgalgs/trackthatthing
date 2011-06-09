@@ -194,8 +194,13 @@ class Admin(MyBaseHandler):
     def get(self):
         user = self.current_user
         if users.is_current_user_admin():
+            data = []
+            for s in Secret.all():
+                data.append({'secret': s,
+                     'num_locations': Location.gql('WHERE user = :1', s.user).count()})
+
             self.render_me('admin.html', {
-                    'secrets': Secret.all(),
+                    'data': data,
                     'user': user
                     })
         else:
@@ -214,8 +219,8 @@ class ViewData(MyBaseHandler):
                 secret_txt = self.request.get('secret')
                 secret = Secret.all().filter('secret = ', secret_txt).get()
                 self.render_me('view_data.html', {
-                        'data': Location.all().filter('user = ', secret.user),
-                        'secret': secret_txt,
+                        'data': Location.all().filter('user = ', secret.user).order('-date').fetch(500),
+                        'secret_for_page': secret_txt,
                         'success': True
                         })
         else:
