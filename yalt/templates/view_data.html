@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block more_js %}
+  <script type="text/javascript" src="/resources/js/admin.js"></script>
+{% endblock %}
+{% block content %}
+  <h5>Data for Secret {{ secret }}</h5>
+
+{% if success %}
+  <table cellspacing="0" cellpadding="8" border="1">
+    <tr>
+      <th>User</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Accuracy</th>
+      <th>Speed</th>
+      <th>Date</th>
+    </tr>
+    {% for d in data %}
+      <tr>
+	<td>{{ d.user.nickname }}</td>
+	<td>{{ d.latitude }}</td>
+	<td>{{ d.longitude }}</td>
+	<td>{{ d.accuracy }}</td>
+	<td>{{ d.speed }}</td>
+	<td>{{ d.date }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+	<td colspan="6">No data</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+<p>Invalid secret.</p>
+{% endif %}
+
+
+{% endblock %}

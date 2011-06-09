@@ -1,5 +1,9 @@
 # system imports
 import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from google.appengine.dist import use_library
+use_library('django', '1.2')
+
 import datetime
 import logging
 import StringIO
@@ -59,8 +63,6 @@ class Location(DictModel):
     accuracy = db.FloatProperty()
     speed = db.FloatProperty()
     date = db.DateTimeProperty(auto_now_add=True)
-
-    
 
 class Secret(DictModel):
     user = db.UserProperty()
@@ -200,6 +202,26 @@ class Admin(MyBaseHandler):
             self.write_string('Hilo there ' + str(user) + '\n')
             self.debug_var(user)
 
+class ViewData(MyBaseHandler):
+    def get(self):
+        user = self.current_user
+        if users.is_current_user_admin():
+            if 'secret' not in self.request.arguments():
+                self.render_me('view_data.html', {
+                        'success': False
+                        })
+            else:
+                secret_txt = self.request.get('secret')
+                secret = Secret.all().filter('secret = ', secret_txt).get()
+                self.render_me('view_data.html', {
+                        'data': Location.all().filter('user = ', secret.user),
+                        'secret': secret_txt,
+                        'success': True
+                        })
+        else:
+            self.write_string('Hilo there ' + str(user) + '\n')
+            self.debug_var(user)
+
 class NewTestPoint(MyBaseHandler):
     def get(self):
         if users.is_current_user_admin():
@@ -266,7 +288,8 @@ url_spec = [('/', MainPage),
             ('/download', Download),
             ('/secret', GetSecret),
             ('/new_test_point', NewTestPoint),
-            ('/admin', Admin)]
+            ('/admin', Admin),
+            ('/view_data', ViewData)]
 beta_spec = [(r'.*', Beta)]
 
 dev_spec = url_spec

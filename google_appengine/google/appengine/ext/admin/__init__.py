@@ -15,7 +15,14 @@
 # limitations under the License.
 #
 
+
+
+
 """Simple datastore view and interactive console, for use in dev_appserver."""
+
+
+
+
 
 
 
@@ -41,6 +48,8 @@ import urllib
 import urlparse
 import wsgiref.handlers
 
+
+
 try:
   from google.appengine.cron import groctimespecification
   from google.appengine.api import croninfo
@@ -50,16 +59,18 @@ else:
   HAVE_CRON = True
 
 from google.appengine.api import apiproxy_stub_map
+from google.appengine.api import backends
 from google.appengine.api import datastore
 from google.appengine.api import datastore_admin
 from google.appengine.api import datastore_types
 from google.appengine.api import datastore_errors
 from google.appengine.api import memcache
-from google.appengine.api.labs import taskqueue
+from google.appengine.api import taskqueue
 from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
+
 
 _DEBUG = True
 
@@ -130,6 +141,7 @@ class BaseRequestHandler(webapp.RequestHandler):
       'queues_path': base_path + QueuesPageHandler.PATH,
       'xmpp_path': base_path + XMPPPageHandler.PATH,
       'inboundmail_path': base_path + InboundMailPageHandler.PATH,
+      'backends_path': base_path + BackendsPageHandler.PATH,
     }
     if HAVE_CRON:
       values['cron_path'] = base_path + CronPageHandler.PATH
@@ -206,10 +218,12 @@ class InteractiveExecuteHandler(BaseRequestHandler):
   PATH = InteractivePageHandler.PATH + '/execute'
 
   def post(self):
+
     save_stdout = sys.stdout
     results_io = cStringIO.StringIO()
     try:
       sys.stdout = results_io
+
 
       code = self.request.get('code')
       code = code.replace("\r\n", "\n")
@@ -250,7 +264,10 @@ class CronPageHandler(BaseRequestHandler):
           job['timezone'] = entry.timezone
         job['url'] = entry.url
         job['schedule'] = entry.schedule
+
+
         schedule = groctimespecification.GrocTimeSpecification(entry.schedule)
+
         matches = schedule.GetMatches(now, 3)
         job['times'] = []
         for match in matches:
@@ -265,6 +282,7 @@ class XMPPPageHandler(BaseRequestHandler):
 
   def get(self):
     """Shows template displaying the XMPP."""
+
     xmpp_configured = True
     values = {
       'xmpp_configured': xmpp_configured,
@@ -279,6 +297,7 @@ class InboundMailPageHandler(BaseRequestHandler):
 
   def get(self):
     """Shows template displaying the Inbound Mail form."""
+
     inboundmail_configured = True
     values = {
       'inboundmail_configured': inboundmail_configured,
@@ -306,6 +325,8 @@ class QueuesPageHandler(BaseRequestHandler):
     """Handle modifying actions and/or redirect to GET page."""
 
     if self.request.get('action:purgequeue'):
+
+
       self.stub.FlushQueue(self.request.get('queue'))
     self.redirect(self.request.path_url)
 
@@ -361,9 +382,94 @@ class TasksPageHandler(BaseRequestHandler):
     return
 
 
+class BackendsPageHandler(BaseRequestHandler):
+  """Shows information about an app's backends."""
+
+  PATH = '/backends'
+
+  def __init__(self):
+    self.stub = apiproxy_stub_map.apiproxy.GetStub('system')
+
+  def get(self):
+    """Shows template displaying the app's backends or a single backend."""
+    backend_name = self.request.get('backendName')
+    if backend_name:
+      return self.render_backend_page(backend_name)
+    else:
+      return self.render_backends_page()
+
+  def render_backends_page(self):
+    """Shows template displaying all the app's backends."""
+    if hasattr(self.stub, 'get_backend_info'):
+      backend_info = self.stub.get_backend_info() or []
+    else:
+
+      backend_info = []
+
+    backend_list = []
+    for backend in backend_info:
+      backend_list.append({
+          'name': backend.name,
+          'instances': backend.instances,
+          'instanceclass': backend.get_class() or 'B2',
+          'address': backends.get_hostname(backend.name),
+          'state': 'running',
+          'options': backend.options,
+      })
+
+    values = {
+      'request': self.request,
+      'backends': backend_list,
+      'backend_path': self.base_path() + self.PATH,
+    }
+    self.generate('backends.html', values)
+
+  def get_backend_entry(self, backend_name):
+    """Get the BackendEntry for a single backend."""
+    if not hasattr(self.stub, 'get_backend_info'):
+      return None
+
+    backend_entries = self.stub.get_backend_info() or []
+    for backend in backend_entries:
+      if backend.name == backend_name:
+        return backend
+    return None
+
+  def render_backend_page(self, backend_name):
+    """Shows template displaying a single backend."""
+    backend = self.get_backend_entry(backend_name)
+
+    instances = []
+    if backend:
+      for i in range(backend.instances):
+        instances.append({
+            'id': i,
+            'address': backends.get_hostname(backend_name, i),
+            'state': 'running',
+        })
+
+    values = {
+      'request': self.request,
+      'backend_name': backend_name,
+      'backend_path': self.base_path() + self.PATH,
+      'instances': instances,
+    }
+    self.generate('backend.html', values)
+
+  def post(self):
+    if self.request.get('action:startbackend'):
+      self.stub.start_backend(self.request.get('backend'))
+    if self.request.get('action:stopbackend'):
+      self.stub.stop_backend(self.request.get('backend'))
+    self.redirect(self.request.path_url)
+    return
+
+
 class MemcachePageHandler(BaseRequestHandler):
   """Shows stats about memcache and query form to get values."""
   PATH = '/memcache'
+
+
 
   TYPES = ((str, str, 'String'),
            (unicode, unicode, 'Unicode String'),
@@ -406,16 +512,21 @@ class MemcachePageHandler(BaseRequestHandler):
       value = memcache.get(key)
     except (pickle.UnpicklingError, AttributeError, EOFError, ImportError,
             IndexError), e:
+
+
       msg = 'Failed to retrieve value from cache: %s' % e
       return msg, 'error'
 
     if value is None:
+
       return None, self.DEFAULT_TYPESTR_FOR_NEW
+
 
     for typeobj, _, typestr in self.TYPES:
       if isinstance(value, typeobj):
         break
     else:
+
       typestr = 'pickled'
       value = pprint.pformat(value, indent=2)
 
@@ -430,7 +541,7 @@ class MemcachePageHandler(BaseRequestHandler):
       value: String, will be converted according to type_.
 
     Returns:
-      Result of memcache.set(ket, converted_value).  True if value was set.
+      Result of memcache.set(key, converted_value).  True if value was set.
 
     Raises:
       ValueError: Value can't be converted according to type_.
@@ -451,16 +562,19 @@ class MemcachePageHandler(BaseRequestHandler):
     edit = self.request.get('edit')
     key = self.request.get('key')
     if edit:
+
       key = edit
       values['show_stats'] = False
       values['show_value'] = False
       values['show_valueform'] = True
       values['types'] = [typestr for _, _, typestr in self.TYPES]
     elif key:
+
       values['show_stats'] = True
       values['show_value'] = True
       values['show_valueform'] = False
     else:
+
       values['show_stats'] = True
       values['show_valueform'] = False
       values['show_value'] = False
@@ -478,6 +592,7 @@ class MemcachePageHandler(BaseRequestHandler):
     if values['show_stats']:
       memcache_stats = memcache.get_stats()
       if not memcache_stats:
+
         memcache_stats = {'hits': 0, 'misses': 0, 'byte_hits': 0, 'items': 0,
                           'bytes': 0, 'oldest_item_age': 0}
       values['stats'] = memcache_stats
@@ -594,6 +709,7 @@ class DatastoreRequestHandler(BaseRequestHandler):
       return ([], 0)
     query = datastore.Query(kind, _namespace=namespace)
 
+
     order = self.request.get('order')
     order_type = self.request.get('order_type')
     if order and order_type:
@@ -606,6 +722,7 @@ class DatastoreRequestHandler(BaseRequestHandler):
       try:
         query.Order((order, order_type, direction))
       except datastore_errors.BadArgumentError:
+
         pass
 
     if not start:
@@ -668,10 +785,15 @@ class DatastoreQueryHandler(DatastoreRequestHandler):
     The only complex part of that process is calculating the pager variables
     to generate the Gooooogle pager at the bottom of the page.
     """
+
+
+
     result_set, total = self.execute_query()
     key_values = self.get_key_values(result_set)
     keys = key_values.keys()
     keys.sort()
+
+
 
     headers = []
     for key in keys:
@@ -680,6 +802,8 @@ class DatastoreQueryHandler(DatastoreRequestHandler):
         'name': key,
         'type': DataType.get(sample_value).name(),
       })
+
+
 
     entities = []
     edit_path = self.base_path() + DatastoreEditHandler.PATH
@@ -711,6 +835,7 @@ class DatastoreQueryHandler(DatastoreRequestHandler):
         'edit_uri': edit_path + '?key=' + str(entity.key()) + '&kind=' + urllib.quote(self.request.get('kind')) + '&next=' + urllib.quote(self.request.uri),
       })
 
+
     start = self.start()
     num = self.num()
     max_pager_links = 8
@@ -732,6 +857,7 @@ class DatastoreQueryHandler(DatastoreRequestHandler):
       kinds = None
     else:
       kinds = self.get_kinds(self.request.get('namespace'))
+
 
     values = {
         'request': self.request,
@@ -774,6 +900,8 @@ class DatastoreBatchEditHandler(DatastoreRequestHandler):
   def post(self):
     kind = self.request.get('kind')
 
+
+
     keys = []
     index = 0
     num_keys = int(self.request.get('numkeys'))
@@ -784,6 +912,7 @@ class DatastoreBatchEditHandler(DatastoreRequestHandler):
 
     if self.request.get('action') == 'Delete':
       num_deleted = 0
+
       for key in keys:
         datastore.Delete(datastore.Key(key))
         num_deleted = num_deleted + 1
@@ -792,6 +921,7 @@ class DatastoreBatchEditHandler(DatastoreRequestHandler):
       self.redirect(
         '%s&msg=%s' % (self.request.get('next'), urllib.quote_plus(message)))
       return
+
 
     self.error(404)
 
@@ -808,6 +938,7 @@ class DatastoreEditHandler(DatastoreRequestHandler):
   PATH = DatastoreQueryHandler.PATH + '/edit'
 
   def get(self):
+
     entity_key = self.request.get('key')
     if entity_key:
       key_instance = datastore.Key(entity_key)
@@ -819,10 +950,15 @@ class DatastoreEditHandler(DatastoreRequestHandler):
       entity = datastore.Get(key_instance)
       sample_entities = [entity]
     else:
+
       kind = self.request.get('kind')
       sample_entities = self.execute_query()[0]
 
     if len(sample_entities) < 1:
+
+
+
+
       next_uri = self.request.get('next')
       next_uri += '&msg=%s' % urllib.quote_plus(
           "The kind %s doesn't exist in the %s namespace" % (
@@ -853,6 +989,9 @@ class DatastoreEditHandler(DatastoreRequestHandler):
       parent_kind = None
       parent_key_string = None
 
+
+
+
     fields = []
     key_values = self.get_key_values(sample_entities)
     for key, sample_values in key_values.iteritems():
@@ -867,6 +1006,10 @@ class DatastoreEditHandler(DatastoreRequestHandler):
         value = None
       field = data_type.input_field(name, value, sample_values)
       fields.append((key, data_type.name(), field))
+
+
+
+
 
     self.generate('datastore_edit.html', {
       'kind': kind,
@@ -883,9 +1026,11 @@ class DatastoreEditHandler(DatastoreRequestHandler):
     })
 
   def post(self):
+
     kind = self.request.get('kind')
     entity_key = self.request.get('key')
     if entity_key:
+
       if self.request.get('action') == 'Delete':
         datastore.Delete(datastore.Key(entity_key))
         self.redirect(self.request.get('next'))
@@ -905,10 +1050,14 @@ class DatastoreEditHandler(DatastoreRequestHandler):
         field_name = arg[bar + 1:]
         form_value = self.request.get(arg)
         data_type = DataType.get_by_name(data_type_name)
+
+
+
         if entity and entity.has_key(field_name):
           old_formatted_value = data_type.format(entity[field_name])
           if old_formatted_value == ustr(form_value):
             continue
+
 
         if len(form_value) > 0:
           value = data_type.parse(form_value)
@@ -916,9 +1065,11 @@ class DatastoreEditHandler(DatastoreRequestHandler):
         elif entity.has_key(field_name):
           del entity[field_name]
 
+
     datastore.Put(entity)
 
     self.redirect(self.request.get('next'))
+
 
 
 class DataType(object):
@@ -963,6 +1114,7 @@ class DataType(object):
     return 30
 
   def additional_short_value_html(self, unused_value):
+
     return ''
 
 
@@ -1050,29 +1202,20 @@ class TimeType(DataType):
 
 class ListType(DataType):
   def format(self, value):
-    value_file = cStringIO.StringIO()
-    try:
-      writer = csv.writer(value_file)
-      writer.writerow(map(ustr, value))
-      return ustr(value_file.getvalue())
-    finally:
-      value_file.close()
+    return repr(value)
+
+  def short_format(self, value):
+    format = self.format(value)
+    if len(format) > 20:
+      return format[:20] + '...'
+    else:
+      return format
 
   def name(self):
     return 'list'
 
-  def parse(self, value):
-    value_file = cStringIO.StringIO(ustr(value))
-    try:
-      reader = csv.reader(value_file)
-      fields = []
-      for field in reader.next():
-        if isinstance(field, str):
-          field = field.decode('utf-8')
-        fields.append(field)
-      return fields
-    finally:
-      value_file.close()
+  def input_field(self, name, value, sample_values):
+    return cgi.escape(self.format(value))
 
   def python_type(self):
     return list
@@ -1096,6 +1239,7 @@ class BoolType(DataType):
       return True
     if value.lower() is 'false':
       return False
+
     return bool(int(value))
 
   def python_type(self):
@@ -1152,6 +1296,7 @@ class UserType(DataType):
 
   def input_field_size(self):
     return 15
+
 
 
 class ReferenceType(DataType):
@@ -1302,6 +1447,8 @@ class BlobKeyType(StringType):
     return datastore_types.BlobKey
 
 
+
+
 _DATA_TYPES = {
   types.NoneType: NoneType(),
   types.StringType: StringType(),
@@ -1354,6 +1501,7 @@ def _ParseCronYaml():
   return None
 
 
+
 def PseudoBreadcrumbs(key):
   """Return a string that looks like the breadcrumbs (for key properties).
 
@@ -1392,12 +1540,15 @@ def main():
     ('.*' + TasksPageHandler.PATH, TasksPageHandler),
     ('.*' + XMPPPageHandler.PATH, XMPPPageHandler),
     ('.*' + InboundMailPageHandler.PATH, InboundMailPageHandler),
+    ('.*' + BackendsPageHandler.PATH, BackendsPageHandler),
     ('.*', DefaultPageHandler),
   ]
   if HAVE_CRON:
     handlers.insert(0, ('.*' + CronPageHandler.PATH, CronPageHandler))
   application = webapp.WSGIApplication(handlers, debug=_DEBUG)
   wsgiref.handlers.CGIHandler().run(application)
+
+
 
 
 import django

@@ -19,7 +19,7 @@
       <tr>
 	<td>{{ secret.user.nickname }}</td>
 	<td>{{ secret.secret_readable }}</td>
-	<td>{{ secret.secret }}</td>
+	<td><a href="/view_data?secret={{ secret.secret }}">{{ secret.secret }}</a></td>
 	<td>{{ secret.niters }}</td>
       </tr>
     {% endfor %}

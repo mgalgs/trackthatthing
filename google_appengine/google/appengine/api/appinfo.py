@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+
+
+
 """AppInfo tools.
 
 Library for working with AppInfo records in memory, store and load from
@@ -25,24 +28,37 @@ configuration files.
 
 
 
+
+
+
+
 import logging
 import re
 
 from google.appengine.api import appinfo_errors
+from google.appengine.api import backendinfo
 from google.appengine.api import validation
 from google.appengine.api import yaml_builder
 from google.appengine.api import yaml_listener
 from google.appengine.api import yaml_object
 
+
 _URL_REGEX = r'(?!\^)/|\.|(\(.).*(?!\$).'
 _FILES_REGEX = r'(?!\^).*(?!\$).'
 
+
 _DELTA_REGEX = r'([0-9]+)([DdHhMm]|[sS]?)'
 _EXPIRATION_REGEX = r'\s*(%s)(\s+%s)*\s*' % (_DELTA_REGEX, _DELTA_REGEX)
+_START_PATH = '/_ah/start'
+
+
+
 
 _SERVICE_RE_STRING = r'(mail|xmpp_message|xmpp_subscribe|xmpp_presence|rest|warmup)'
 
+
 _PAGE_NAME_REGEX = r'^.+$'
+
 
 
 _EXPIRATION_CONVERSIONS = {
@@ -52,13 +68,19 @@ _EXPIRATION_CONVERSIONS = {
     's': 1,
 }
 
+
+
 APP_ID_MAX_LEN = 100
 MAJOR_VERSION_ID_MAX_LEN = 100
 MAX_URL_MAPS = 100
 
+
 PARTITION_SEPARATOR = '~'
 
+
 DOMAIN_SEPARATOR = ':'
+
+
 
 PARTITION_RE_STRING = (r'[a-z\d\-]{1,%d}\%s' %
                        (APP_ID_MAX_LEN, PARTITION_SEPARATOR))
@@ -69,10 +91,14 @@ APPLICATION_RE_STRING = (r'(?:%s)?(?:%s)?%s' %
                          (PARTITION_RE_STRING,
                           DOMAIN_RE_STRING,
                           DISPLAY_APP_ID_RE_STRING))
+
+
+
+
 VERSION_RE_STRING = r'(?!-)[a-z\d\-]{1,%d}' % MAJOR_VERSION_ID_MAX_LEN
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 
-RUNTIME_RE_STRING = r'[a-z]{1,30}'
+RUNTIME_RE_STRING = r'[a-z][a-z0-9]{0,29}'
 
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
 
@@ -90,6 +116,7 @@ AUTH_FAIL_ACTION_UNAUTHORIZED = 'unauthorized'
 SECURE_HTTP = 'never'
 SECURE_HTTPS = 'always'
 SECURE_HTTP_OR_HTTPS = 'optional'
+
 SECURE_DEFAULT = 'default'
 
 REQUIRE_MATCHING_FILE = 'require_matching_file'
@@ -101,6 +128,7 @@ DEFAULT_SKIP_FILES = (r'^(.*/)?('
                       r'(.*/RCS/.*)|'
                       r'(\..*)|'
                       r')$')
+
 
 LOGIN = 'login'
 AUTH_FAIL_ACTION = 'auth_fail_action'
@@ -116,8 +144,11 @@ MIME_TYPE = 'mime_type'
 SCRIPT = 'script'
 EXPIRATION = 'expiration'
 
+
 APPLICATION = 'application'
 VERSION = 'version'
+MAJOR_VERSION = 'major_version'
+MINOR_VERSION = 'minor_version'
 RUNTIME = 'runtime'
 API_VERSION = 'api_version'
 BUILTINS = 'builtins'
@@ -131,13 +162,18 @@ JAVA_PRECOMPILED = 'java_precompiled'
 PYTHON_PRECOMPILED = 'python_precompiled'
 ADMIN_CONSOLE = 'admin_console'
 ERROR_HANDLERS = 'error_handlers'
+BACKENDS = 'backends'
+THREADSAFE = 'threadsafe'
+
 
 PAGES = 'pages'
 NAME = 'name'
 
+
 ERROR_CODE = 'error_code'
 FILE = 'file'
 _ERROR_CODE_REGEX = r'(default|over_quota|dos_api_denial|timeout)'
+
 
 ON = 'on'
 ON_ALIASES = ['yes', 'y', 'True', 't', '1', 'true']
@@ -260,6 +296,8 @@ class URLMap(validation.Validated):
 
   COMMON_FIELDS = set([URL, LOGIN, AUTH_FAIL_ACTION, SECURE])
 
+
+
   ALLOWED_FIELDS = {
       HANDLER_STATIC_FILES: (MIME_TYPE, UPLOAD, EXPIRATION,
                              REQUIRE_MATCHING_FILE),
@@ -292,14 +330,19 @@ class URLMap(validation.Validated):
       required attribute for its handler type.
     """
     for id_field in URLMap.ALLOWED_FIELDS.iterkeys():
+
       if getattr(self, id_field) is not None:
+
         mapping_type = id_field
         break
     else:
+
       raise appinfo_errors.UnknownHandlerType(
           'Unknown url handler type.\n%s' % str(self))
 
     allowed_fields = URLMap.ALLOWED_FIELDS[mapping_type]
+
+
 
     for attribute in self.ATTRIBUTES.iterkeys():
       if (getattr(self, attribute) is not None and
@@ -309,6 +352,9 @@ class URLMap(validation.Validated):
         raise appinfo_errors.UnexpectedHandlerAttribute(
             'Unexpected attribute "%s" for mapping type %s.' %
             (attribute, mapping_type))
+
+
+
 
     if mapping_type == HANDLER_STATIC_FILES and not self.upload:
       raise appinfo_errors.MissingHandlerAttribute(
@@ -387,6 +433,13 @@ class AdminConsole(validation.Validated):
   def Merge(cls, adminconsole_one, adminconsole_two):
     """Return the result of merging two AdminConsole objects."""
 
+
+
+
+
+
+
+
     if not adminconsole_one or not adminconsole_two:
       return adminconsole_one or adminconsole_two
 
@@ -415,6 +468,42 @@ class BuiltinHandler(validation.Validated):
   Permits arbitrary keys but their values must be described by the
   validation.Options object returned by ATTRIBUTES.
   """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   class DynamicAttributes(dict):
@@ -460,6 +549,10 @@ class BuiltinHandler(validation.Validated):
       self.builtin_name = key
       super(BuiltinHandler, self).__setattr__(key, value)
     else:
+
+
+
+
       raise appinfo_errors.MultipleBuiltinsSpecified(
           'More than one builtin defined in list element.  Each new builtin '
           'should be prefixed by "-".')
@@ -538,8 +631,12 @@ class AppInclude(validation.Validated):
     """This function merges an app.yaml file with referenced builtins/includes.
     """
 
+
+
+
     if not appinclude:
       return appyaml
+
 
     if appinclude.handlers:
       tail = appyaml.handlers or []
@@ -552,6 +649,7 @@ class AppInclude(validation.Validated):
           tail.append(h)
 
       appyaml.handlers.extend(tail)
+
 
     appyaml.admin_console = AdminConsole.Merge(appyaml.admin_console,
                                                appinclude.admin_console)
@@ -574,14 +672,18 @@ class AppInclude(validation.Validated):
       appinclude_one and appinclude_two.
     """
 
+
+
     if not appinclude_one or not appinclude_two:
       return appinclude_one or appinclude_two
+
 
     if appinclude_one.handlers:
       if appinclude_two.handlers:
         appinclude_one.handlers.extend(appinclude_two.handlers)
     else:
       appinclude_one.handlers = appinclude_two.handlers
+
 
     appinclude_one.admin_console = (
         AdminConsole.Merge(appinclude_one.admin_console,
@@ -598,7 +700,7 @@ class AppInfoExternal(validation.Validated):
 
   Attributes:
     application: Unique identifier for application.
-    version: Application's major version number.
+    version: Application's major version.
     runtime: Runtime used by application.
     api_version: Which version of APIs to use.
     handlers: List of URL handlers.
@@ -616,7 +718,7 @@ class AppInfoExternal(validation.Validated):
 
 
       APPLICATION: APPLICATION_RE_STRING,
-      VERSION: VERSION_RE_STRING,
+      VERSION: validation.Optional(VERSION_RE_STRING),
       RUNTIME: RUNTIME_RE_STRING,
 
 
@@ -633,6 +735,9 @@ class AppInfoExternal(validation.Validated):
           validation.Options(JAVA_PRECOMPILED, PYTHON_PRECOMPILED))),
       ADMIN_CONSOLE: validation.Optional(AdminConsole),
       ERROR_HANDLERS: validation.Optional(validation.Repeated(ErrorHandlers)),
+      BACKENDS: validation.Optional(validation.Repeated(
+          backendinfo.BackendEntry)),
+      THREADSAFE: validation.Optional(bool),
   }
 
   def CheckInitialized(self):
@@ -654,10 +759,69 @@ class AppInfoExternal(validation.Validated):
       raise appinfo_errors.TooManyURLMappings(
           'Found more than %d URLMap entries in application configuration' %
           MAX_URL_MAPS)
-    if self.version.find(ALTERNATE_HOSTNAME_SEPARATOR) != -1:
+
+    if self.version and self.version.find(ALTERNATE_HOSTNAME_SEPARATOR) != -1:
       raise validation.ValidationError(
-          'App version "%s" cannot contain the string "%s"' % (
+          'Version "%s" cannot contain the string "%s"' % (
               self.version, ALTERNATE_HOSTNAME_SEPARATOR))
+
+
+  def ApplyBackendSettings(self, backend_name):
+    """Applies settings from the indicated backend to the AppInfoExternal.
+
+    Backend entries may contain directives that modify other parts of the
+    app.yaml, such as the 'start' directive, which adds a handler for the start
+    request.  This method performs those modifications.
+
+    Args:
+      backend_name: The name of a backend defined in 'backends'.
+
+    Raises:
+      BackendNotFound: If the indicated backend was not listed in 'backends'.
+    """
+    if backend_name is None:
+      return
+
+    if self.backends is None:
+      raise appinfo_errors.BackendNotFound
+
+    self.version = backend_name
+
+    match = None
+    for backend in self.backends:
+      if backend.name != backend_name:
+        continue
+      if match:
+        raise appinfo_errors.DuplicateBackend
+      else:
+        match = backend
+
+    if match is None:
+      raise appinfo_errors.BackendNotFound
+
+    if match.start is None:
+      return
+
+    start_handler = URLMap(url=_START_PATH, script=match.start)
+    self.handlers.insert(0, start_handler)
+
+
+def ValidateHandlers(handlers, is_include_file=False):
+  """Validates a list of handler (URLMap) objects.
+
+  Args:
+    handlers: A list of a handler (URLMap) objects.
+    is_include_file: If true, indicates the we are performing validation
+      for handlers in an AppInclude file, which may contain special directives.
+  """
+  if not handlers:
+    return
+
+  for handler in handlers:
+    handler.FixSecureDefaults()
+    handler.WarnReservedURLs()
+    if not is_include_file:
+      handler.ErrorOnPositionForAppInfo()
 
 
 def LoadSingleAppInfo(app_info):
@@ -689,15 +853,24 @@ def LoadSingleAppInfo(app_info):
     raise appinfo_errors.MultipleConfigurationFile()
 
   appyaml = app_infos[0]
-  if appyaml.handlers:
-    for handler in appyaml.handlers:
-      handler.FixSecureDefaults()
-      handler.WarnReservedURLs()
-      handler.ErrorOnPositionForAppInfo()
+  ValidateHandlers(appyaml.handlers)
   if appyaml.builtins:
     BuiltinHandler.Validate(appyaml.builtins)
 
   return appyaml
+
+
+class AppInfoSummary(validation.Validated):
+  """This class contains only basic summary information about an app.
+
+  It is used to pass back information about the newly created app to users
+  after a new version has been created.
+  """
+  ATTRIBUTES = {
+      APPLICATION: APPLICATION_RE_STRING,
+      MAJOR_VERSION: VERSION_RE_STRING,
+      MINOR_VERSION: validation.TYPE_LONG
+  }
 
 
 def LoadAppInclude(app_include):
@@ -756,11 +929,18 @@ def ParseExpiration(expiration):
 
 
 
+
+
+
 _file_path_positive_re = re.compile(r'^[ 0-9a-zA-Z\._\+/\$-]{1,256}$')
+
 
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/')
 
+
 _file_path_negative_2_re = re.compile(r'//|/$')
+
+
 
 _file_path_negative_3_re = re.compile(r'^ | $|/ | /')
 

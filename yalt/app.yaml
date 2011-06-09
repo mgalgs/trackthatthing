@@ -15,6 +15,10 @@ handlers:
   script: yalt.py
   login: admin
 
+- url: /view_data
+  script: yalt.py
+  login: admin
+
 - url: /new_test_point
   script: yalt.py
   login: admin
