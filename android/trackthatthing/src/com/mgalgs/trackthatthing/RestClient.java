@@ -46,7 +46,7 @@ public class RestClient {
 	}
 
 	/**
-	 * This is a test function which will connects to a given rest service and
+	 * This function connects to a given rest service and
 	 * prints it's response to Android Log with labels TrackThatThing.TAG. Returns the
 	 * JSONObject or null on error.
 	 */
@@ -63,7 +63,6 @@ public class RestClient {
 		try {
 			response = httpclient.execute(httpget);
 			// Examine the response status
-			//Log.i(TrackThatThing.TAG, "here is the response status line we got:\n" + response.getStatusLine().toString());
 
 			// Get hold of the response entity
 			HttpEntity entity = response.getEntity();
@@ -79,17 +78,6 @@ public class RestClient {
 
 				// A Simple JSONObject Creation
 				json = new JSONObject(result);
-				//Log.i(TrackThatThing.TAG, "Here's the json object:\n" + json.toString());
-
-				// A Simple JSONObject Parsing
-//				JSONArray nameArray = json.names();
-//				JSONArray valArray = json.toJSONArray(nameArray);
-
-				
-				// A Simple JSONObject Value Pushing
-//				json.put("sample key", "sample value");
-//				Log.i(TrackThatThing.TAG, "<jsonobject>\n" + json.toString()
-//						+ "\n</jsonobject>");
 
 				// Closing the input stream will trigger connection release
 				instream.close();

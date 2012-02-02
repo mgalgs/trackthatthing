@@ -2,7 +2,6 @@ package com.mgalgs.trackthatthing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,9 +25,7 @@ public class TrackThatThing extends Activity {
 	public static final String PREF_LAST_LOC_TIME = "last_loc";
 	public static long DEFAULT_SLEEP_TIME = 30; //seconds
 	public static final String BASE_URL = "http://www.trackthatthing.com";
-//	public static final String BASE_URL = "http://firsthome.homelinux.org:8080";
-//	public static final String BASE_URL = "http://sonch:8080";
-	
+
 	private String secret_code;
 	
     /** Called when the activity is first created. */
@@ -44,7 +41,7 @@ public class TrackThatThing extends Activity {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.remove(PREF_LAST_LOC_TIME);
 		editor.commit();
-        
+		
         setContentView(R.layout.main);
         
         Button button = (Button) findViewById(R.id.button);
@@ -109,10 +106,8 @@ public class TrackThatThing extends Activity {
 		secret_code = settings.getString(PREF_SECRET_CODE, null);
 		
 		if (secret_code != null) {
-//			Log.i(TAG, "Got secret code: " + secret_code);
 			launchTracker();
 		} else {
-//			Log.i(TAG, "No secret code. Launching secret getter: " + new Boolean(!dont_try_to_get_secret).toString());
 			if (!dont_try_to_get_secret) {
 				launchSecretGetter();
 			} else {
@@ -147,12 +142,8 @@ public class TrackThatThing extends Activity {
 	
 	
 	private void launchGPSOptions() {
-		final ComponentName toLaunch = new ComponentName(
-				"com.android.settings", "com.android.settings.SecuritySettings");
 		final Intent intent = new Intent(
 				Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		intent.setComponent(toLaunch);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivityForResult(intent, RESULT_CHANGE_GPS_SETTINGS);
 	}    
