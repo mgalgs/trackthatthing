@@ -87,7 +87,7 @@ public class LocationWrapper {
 		qs.add("lon", Double.toString(mLongitude));
 		qs.add("acc", Float.toString(mAccuracy));
 		qs.add("speed", Float.toString(mSpeed));
-		qs.add("date", Long.toString(mDateRecorded.getTime()));
+		qs.add("date", Long.toString(mDateRecorded.getTime() / 1000));
 
 		Runnable r = new MyInternetThread(context, qs);
 		new Thread(r).start();

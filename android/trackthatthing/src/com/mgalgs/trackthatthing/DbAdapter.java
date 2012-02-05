@@ -75,7 +75,7 @@ public class DbAdapter {
 	 */
 	public int SaveLocationToDb(LocationWrapper l) {
 		ContentValues cv = new ContentValues();
-		cv.put(KEY_DATE_RECORDED, l.mDateRecorded.getTime());
+		cv.put(KEY_DATE_RECORDED, l.mDateRecorded.getTime() / 1000);
 		cv.put(KEY_LATITUDE, l.mLatitude);
 		cv.put(KEY_LONGITUDE, l.mLongitude);
 		cv.put(KEY_SAVED_TO_CLOUD, false);

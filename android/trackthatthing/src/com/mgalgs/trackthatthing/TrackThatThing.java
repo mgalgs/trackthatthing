@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -24,7 +25,9 @@ public class TrackThatThing extends Activity {
 	public static final String PREF_FIRST_LAUNCH = "first_launch";
 	public static final String PREF_LAST_LOC_TIME = "last_loc";
 	public static long DEFAULT_SLEEP_TIME = 30; //seconds
-	public static final String BASE_URL = "http://www.trackthatthing.com";
+	public static final String BASE_URL = Build.PRODUCT.equals("google_sdk")
+			|| Build.PRODUCT.equals("sdk") ? "http://10.0.2.2:8080"
+			: "http://www.trackthatthing.com";
 
 	private String secret_code;
 	

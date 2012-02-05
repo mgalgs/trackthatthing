@@ -55,19 +55,20 @@ public class LocationReceiver extends BroadcastReceiver {
 			long sleep_period = settings.getLong(TrackThatThing.PREF_SLEEP_TIME, TrackThatThing.DEFAULT_SLEEP_TIME);
 			if (getTimeSinceLastLoc_S() > sleep_period - 3 || mLastLocTime == -1) {
 				// it has been long enough
+				mLastLocTime = SystemClock.elapsedRealtime();
+
+				// TODO: Notify a Service of this location and let it do the
+				// asynch saving.
+				LocationWrapper l = new LocationWrapper(loc);
+				l.saveToDb();
+
+				msg = loc.toString();
 			} else {
 				// it hasn't been long enough!
 				Log.d(TrackThatThing.TAG, "It has only been " + getTimeSinceLastLoc_S() + " seconds since the last location update, not long enough!");
 				return;
 			}
 
-			mLastLocTime = SystemClock.elapsedRealtime();
-
-			// TODO: Notify a Service of this location and let it do the asynch saving.
-			LocationWrapper l = new LocationWrapper(loc);
-			l.saveToCloud(mContext);
-			
-			msg = loc.toString();
 		}
 
 		Log.d(TrackThatThing.TAG, "got this location: " + msg);
