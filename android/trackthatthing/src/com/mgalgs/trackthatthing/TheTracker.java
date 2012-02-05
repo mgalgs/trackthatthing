@@ -123,10 +123,8 @@ public class TheTracker extends Activity {
 					"Weird, they got to the tracker screen without a secret code...");
 		}
 
-		String last_update = settings.getString(
-				TrackThatThing.PREF_LAST_LOC_TIME, "Trying to get GPS lock...");
 		tv = (TextView) findViewById(R.id.the_last_update_label);
-		tv.setText(last_update);
+		tv.setText(mDbAdapter.getTimeOfLastSave());
 	}
 
 	public void toggleTracking() {

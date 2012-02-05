@@ -185,6 +185,8 @@ class PutData(MyBaseHandler):
                 l.accuracy = float(self.request.get('acc'))
                 l.speed = float(self.request.get('speed'))
                 l.user = u
+                if 'date' in self.request.arguments():
+                    l.date = int(self.request.get('date'))
                 l.put()
                 obj = {'msg':'Success!','success':True}
 

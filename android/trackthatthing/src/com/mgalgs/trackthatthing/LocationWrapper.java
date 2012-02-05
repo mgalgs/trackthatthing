@@ -2,6 +2,7 @@ package com.mgalgs.trackthatthing;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,8 +18,8 @@ public class LocationWrapper {
 	double mLongitude;
 	double mLatitude;
 	float mSpeed;
-	String mTimeRecorded;
-	public final SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat(
+	Date mDateRecorded;
+	public static final SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat(
 			"hh:mm:ss a yyyy-MM-dd");
 	public final Calendar mCal = Calendar.getInstance();
 	public boolean mSavedToCloud = false;
@@ -40,7 +41,14 @@ public class LocationWrapper {
 		mLongitude = l.getLongitude();
 		mLatitude = l.getLatitude();
 		mSpeed = l.getSpeed();
-		mTimeRecorded = mSimpleDateFormat.format(mCal.getTime());
+		mDateRecorded = mCal.getTime();
+	}
+
+	/**
+	 * @return formatted date string for when this location was recorded
+	 */
+	String getDateString() {
+		return mSimpleDateFormat.format(mDateRecorded);
 	}
 
 	/**
@@ -79,6 +87,7 @@ public class LocationWrapper {
 		qs.add("lon", Double.toString(mLongitude));
 		qs.add("acc", Float.toString(mAccuracy));
 		qs.add("speed", Float.toString(mSpeed));
+		qs.add("date", Long.toString(mDateRecorded.getTime()));
 
 		Runnable r = new MyInternetThread(context, qs);
 		new Thread(r).start();
@@ -106,21 +115,6 @@ public class LocationWrapper {
 				mSavedToCloud = true;
 				Intent i = new Intent(TheTracker.IF_LOC_UPDATE);
 				mContext.sendBroadcast(i);
-				
-				// TODO: temporary!
-				SharedPreferences settings = mContext.getSharedPreferences(
-						TrackThatThing.PREFS_NAME,
-						android.content.Context.MODE_PRIVATE);
-				SharedPreferences.Editor editor = settings.edit();
-
-				SimpleDateFormat sdf = new SimpleDateFormat(
-						"hh:mm:ss a yyyy-MM-dd");
-				Calendar cal = Calendar.getInstance();
-
-				editor.putString(TrackThatThing.PREF_LAST_LOC_TIME,
-						sdf.format(cal.getTime()));
-				editor.commit();
-
 			} catch (JSONException e) {
 				Log.e(TrackThatThing.TAG,
 						"couldn't get \"msg\" out of JSON object...");
