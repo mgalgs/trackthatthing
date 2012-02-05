@@ -14,11 +14,11 @@ import random
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.ext import db
 from google.appengine.ext.webapp import template
 from django.utils import simplejson as json
 
 # local imports
+from models import Location, Secret
 from simplewords import simplewords
 
 # max number of words in secret:
@@ -47,29 +47,6 @@ def generate_secret():
         if cnt > 1000:
             raise(BaseException("We were unable to generate a secret... Weird."))
     return st_r,st,cnt
-
-### data models: ###
-# base class that helps us serialize stuff later:
-class DictModel(db.Model):
-    def to_dict(self):
-        d = dict([(p, unicode(getattr(self,p))) for p in self.properties()])
-        d.update({'id':self.key().id()})
-        return d
-
-class Location(DictModel):
-    user = db.UserProperty()
-    latitude = db.FloatProperty()
-    longitude = db.FloatProperty()
-    accuracy = db.FloatProperty()
-    speed = db.FloatProperty()
-    date = db.DateTimeProperty(auto_now_add=True)
-
-class Secret(DictModel):
-    user = db.UserProperty()
-    secret_readable = db.StringProperty()
-    secret = db.StringProperty()
-    niters = db.IntegerProperty() # number of iterations it took to generate this unique secret
-
 
 class MyBaseHandler(webapp.RequestHandler):
     """

@@ -34,5 +34,9 @@ handlers:
   static_files: resources/images/favicon.ico
   upload: resources/images/favicon.ico
 
+- url: /tasks/.*
+  script: tasks.py
+  login: admin
+
 - url: /.*
   script: yalt.py
