@@ -129,7 +129,9 @@ class MainPage(MyBaseHandler):
 
 def str_to_date(date_string):
     'returns datetime.datetime object by parsing the passed-in string'
-    return datetime.datetime.strptime(date_string[0:date_string.index('.')], DATE_FORMAT)
+    if '.' in date_string:
+        date_string = date_string[0:date_string.index('.')]
+    return datetime.datetime.strptime(date_string, DATE_FORMAT)
 
 class GetData(MyBaseHandler):
     def get(self):
@@ -186,7 +188,8 @@ class PutData(MyBaseHandler):
                 l.speed = float(self.request.get('speed'))
                 l.user = u
                 if 'date' in self.request.arguments():
-                    l.date = int(self.request.get('date'))
+                    l.date = datetime.datetime.fromtimestamp(
+                        int(self.request.get('date')))
                 l.put()
                 obj = {'msg':'Success!','success':True}
 
