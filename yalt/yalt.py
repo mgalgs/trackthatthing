@@ -223,13 +223,21 @@ class NewTestPoint(MyBaseHandler):
                 obj = {'msg':'You must supply '+', '.join(required_args)+' arguments.','success':False}
             else:
                 user = self.current_user
-                l = Location.all().filter('user = ', user).order('-date').get()
                 newl = Location()
-                newl.latitude = l.latitude + float(self.request.get('lat_step'))
-                newl.longitude= l.longitude + float(self.request.get('lon_step'))
-                newl.accuracy = l.accuracy + float(self.request.get('acc_step'))
-                newl.speed = l.speed + float(self.request.get('speed_step'))
-                newl.user = l.user
+
+                l = Location.all().filter('user = ', user).order('-date').get()
+                if l is not None:
+                    newl.latitude = l.latitude + float(self.request.get('lat_step'))
+                    newl.longitude= l.longitude + float(self.request.get('lon_step'))
+                    newl.accuracy = l.accuracy + float(self.request.get('acc_step'))
+                    newl.speed = l.speed + float(self.request.get('speed_step'))
+                else:
+                    newl.latitude = 32.95736
+                    newl.longitude = -117.233133
+                    newl.accuracy = 10.0
+                    newl.speed = 42.0
+
+                newl.user = user
                 newl.put()
 
                 obj = {'msg':'Test point added: ' + str(newl.to_dict()), 'title':'Succes!', 'success':True}
