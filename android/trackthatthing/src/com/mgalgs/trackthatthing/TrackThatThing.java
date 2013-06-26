@@ -2,7 +2,6 @@ package com.mgalgs.trackthatthing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -147,12 +146,8 @@ public class TrackThatThing extends Activity {
 	
 	
 	private void launchGPSOptions() {
-		final ComponentName toLaunch = new ComponentName(
-				"com.android.settings", "com.android.settings.SecuritySettings");
 		final Intent intent = new Intent(
 				Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-		intent.addCategory(Intent.CATEGORY_LAUNCHER);
-		intent.setComponent(toLaunch);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivityForResult(intent, RESULT_CHANGE_GPS_SETTINGS);
 	}    

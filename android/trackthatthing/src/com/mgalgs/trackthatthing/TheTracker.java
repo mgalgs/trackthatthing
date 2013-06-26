@@ -1,5 +1,8 @@
 package com.mgalgs.trackthatthing;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -11,7 +14,6 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -254,15 +256,23 @@ public class TheTracker extends Activity {
 	private void shareSecret()
 	{
 		String subject = "See where I'm at in real-time!";
-		String bodyText = String.format("<div>Hey! I'm using <a href=\"http://www.trackthatthing.com\">TrackThatThing</a> " +
-			"to track my location.</div><div>Check out the real-time map of my location " +
-			"<a href=\"http://www.trackthatthing.com/live?secret=%s\">here</a>.</div>", secret_code);
+		String bodyText = "http://www.trackthatthing.com";
+		try {
+			bodyText = String
+					.format("Hey! I'm using TrackThatThing "
+							+ "to track my location. Check out the real-time map of my location "
+							+ "here: http://www.trackthatthing.com/live?secret=%s",
+							URLEncoder.encode(secret_code, "ascii"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-		emailIntent.setType("text/html");
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(bodyText));
-		startActivity(Intent.createChooser(emailIntent, "Email:"));
+		final Intent theIntent = new Intent(android.content.Intent.ACTION_SEND);
+		theIntent.setType("text/plain");
+		theIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+		theIntent.putExtra(android.content.Intent.EXTRA_TEXT, bodyText);
+		startActivity(Intent.createChooser(theIntent, "Send Location"));
 
 	}
 	
