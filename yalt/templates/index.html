@@ -3,7 +3,7 @@
 {% block content %}
 {% if current_user %}
   <div id="secret-code-spot">
-    Hello, {{ current_user.nickname }}! Your secret code is: "<span id="the-secret-code">{{ secret }}</span>".
+    Hello, {{ current_user.nickname() }}! Your secret code is: "<span id="the-secret-code">{{ secret }}</span>".
   </div>
 {% endif %}
 

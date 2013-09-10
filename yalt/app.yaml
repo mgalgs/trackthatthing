@@ -1,26 +1,34 @@
-application: yalt-tracker
+application: yalt-tracker-hrd
 version: 1
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: false
+
+libraries:
+- name: jinja2
+  version: "2.6"
+- name: webapp2
+  version: "2.5.2"
+
 builtins:
 - appstats: on
 
 handlers:
 
 - url: /secret
-  script: yalt.py
+  script: yalt.application
   login: required
 
 - url: /admin
-  script: yalt.py
+  script: yalt.application
   login: admin
 
 - url: /view_data
-  script: yalt.py
+  script: yalt.application
   login: admin
 
 - url: /new_test_point
-  script: yalt.py
+  script: yalt.application
   login: admin
 
 - url: /resources
@@ -35,8 +43,8 @@ handlers:
   upload: resources/images/favicon.ico
 
 - url: /tasks/.*
-  script: tasks.py
+  script: tasks.application
   login: admin
 
 - url: /.*
-  script: yalt.py
+  script: yalt.application

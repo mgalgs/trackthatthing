@@ -1,8 +1,7 @@
 import os
 import datetime
 
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
+import webapp2
 from google.appengine.ext import db
 
 from models import Location
@@ -11,7 +10,7 @@ from models import Location
 is_dev_server = os.environ['SERVER_SOFTWARE'].startswith('Dev')
 
 
-class CleanUp(webapp.RequestHandler):
+class CleanUp(webapp2.RequestHandler):
     def get(self):
         print 'hello, world'
         limit = 1000
@@ -27,12 +26,6 @@ class CleanUp(webapp.RequestHandler):
 
 url_spec = [('/tasks/cleanup', CleanUp)]
 
-application = webapp.WSGIApplication(
+application = webapp2.WSGIApplication(
     url_spec,
     debug=is_dev_server)
-
-def main():
-    run_wsgi_app(application)
-
-if __name__ == '__main__':
-    main()

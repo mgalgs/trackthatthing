@@ -69,7 +69,7 @@
         {% endif %}
         <li class="menuitem right">
           {% if current_user %}
-          <span id="username"><a href="/live">{{ current_user.nickname }}</a></span> | <a href="{{ logout_url }}">Logout</a>
+          <span id="username"><a href="/live">{{ current_user.nickname() }}</a></span> | <a href="{{ logout_url }}">Logout</a>
           {% else %}
           <a id="the-login-link" href="{{ login_url }}">Login</a>
           {% endif %}

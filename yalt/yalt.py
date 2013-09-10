@@ -1,25 +1,24 @@
 # system imports
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from google.appengine.dist import use_library
-use_library('django', '1.2')
-
 import datetime
 import logging
 import StringIO
 from pprint import pprint
 import random
+import json
 
 # appengine imports
 from google.appengine.api import users
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.ext.webapp import template
-from django.utils import simplejson as json
+import webapp2
+import jinja2
 
 # local imports
 from models import Location, Secret
 from simplewords import simplewords
+
+TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
 # max number of words in secret:
 max_secret_length = 4
@@ -48,18 +47,18 @@ def generate_secret():
             raise(BaseException("We were unable to generate a secret... Weird."))
     return st_r,st,cnt
 
-class MyBaseHandler(webapp.RequestHandler):
+class MyBaseHandler(webapp2.RequestHandler):
     """
     This class will be extended by my controllers. Gives some nice
     functionality.
     """
-    def __init__(self):
+    def __init__(self, request=None, response=None):
+        super(MyBaseHandler, self).__init__(request, response)
         self.current_user = users.get_current_user()
         self._already_output_headers = False
 
     def render_me(self, template_name, template_values={}):
         'Renders a template with given template values'
-        template_path = os.path.join(os.path.dirname(__file__), 'templates', template_name)
         # some default template values:
         if self.current_user:
             secretq = Secret.gql("WHERE user = :1", self.current_user)
@@ -82,7 +81,8 @@ class MyBaseHandler(webapp.RequestHandler):
                 'is_admin': users.is_current_user_admin(),
                 'secret': secret_text
                 })
-        self.response.out.write( template.render(template_path, template_values) )
+        template = JINJA_ENVIRONMENT.get_template(template_name)
+        self.response.write(template.render(template_values))
 
     def write_string(self, st):
         'Prints string to output'
@@ -177,14 +177,16 @@ class Admin(MyBaseHandler):
         user = self.current_user
         if users.is_current_user_admin():
             data = []
-            for s in Secret.all():
+            secrets = Secret.all()
+            for s in secrets:
                 data.append({'secret': s,
                      'num_locations': Location.gql('WHERE user = :1', s.user).count()})
 
             self.render_me('admin.html', {
-                    'data': data,
-                    'user': user
-                    })
+                'secrets': secrets,
+                'data': data,
+                'user': user
+            })
         else:
             self.write_string('Hilo there ' + str(user) + '\n')
             self.debug_var(user)
@@ -291,12 +293,6 @@ dev_spec = url_spec
 # live_spec = beta_spec
 live_spec = url_spec
 
-application = webapp.WSGIApplication(
+application = webapp2.WSGIApplication(
     dev_spec if is_dev_server else live_spec,
     debug=is_dev_server)
-
-def main():
-    run_wsgi_app(application)
-
-if __name__ == '__main__':
-    main()

@@ -26,7 +26,7 @@
     <div style="font-size:1.3em; display:none;" id="live-map-for-container">
       Live Map for
       <span id="current-map-for">
-	{% if current_user %}{{ current_user.nickname }}{% endif %}
+	{% if current_user %}{{ current_user.nickname() }}{% endif %}
       </span>
       <span style="font-size:1em;">[<span class="pseudo-link" id="change-secret">Change</span>]</span>
       [<a href="#" id="map-permalink">Public link to this map for sharing</a>]
