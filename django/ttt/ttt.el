@@ -1,6 +1,8 @@
 (defun ttt-manage-command (what)
-  (compile (format "source ~/virtualenvs/ttt/bin/activate && cd /home/mgalgs/src/trackthatthing/django/ttt/ && python ./manage.py %s"
-                   what)))
+  (let ((compilation-buffer-name-function (lambda (mode)
+                                            (format "*ttt-%s*" what))))
+    (compile (format "source ~/virtualenvs/ttt/bin/activate && cd /home/mgalgs/src/trackthatthing/django/ttt/ && python ./manage.py %s"
+                     what))))
 
 (defun ttt-runserver ()
   (interactive)
