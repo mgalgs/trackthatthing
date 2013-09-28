@@ -11,6 +11,16 @@ class Location(models.Model):
     speed = models.FloatField()
     date = models.DateTimeField(default=datetime.now)
 
+    def __unicode__(self):
+        return "u=%s, lat=%f, lon=%f, acc=%f, speed=%f, date=%s" % (
+            str(self.user),
+            self.latitude,
+            self.longitude,
+            self.accuracy,
+            self.speed,
+            str(self.date),
+        )
+
 class Secret(models.Model):
     user = models.ForeignKey(User)
     secret_readable = models.CharField(max_length=200)

@@ -15,7 +15,19 @@ urlpatterns = patterns(
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+)
 
-    # Everything else is served from the tracking app:
-    url(r'.*', include('tracking.urls')),
+urlpatterns += patterns(
+    'tracking.views',
+    url(r'^$', 'index'),
+    url(r'^put/$', 'ttt_put'),
+    url(r'^get/$', 'ttt_get'),
+    url(r'^live/$', 'live'),
+    url(r'^help/$', 'help'),
+    url(r'^about/$', 'about'),
+    url(r'^download/$', 'download'),
+    url(r'^secret/$', 'secret'),
+    url(r'^new_test_point/$', 'new_test_point'),
+    url(r'^admin/$', 'admin'),
+    url(r'^view_data/$', 'view_data'),
 )
