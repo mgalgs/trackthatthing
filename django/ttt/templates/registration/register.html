@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if extra_message %}
+<div class="alert">
+  {{ extra_message }}
+</div>
+{% endif %}
+
+<form action="" method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Submit" />
+</form>
+
+{% endblock content %}

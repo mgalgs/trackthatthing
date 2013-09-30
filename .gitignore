@@ -3,3 +3,4 @@
 dev_appserver.datastore
 .ropeproject
 /tmp.db
+/django/ttt/ttt/ttt_local.py

@@ -8,40 +8,14 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 import datetime
 
-from simplewords import simplewords
 from tracking.models import Secret, Location
 
 DEFAULT_NUM_POINTS = 30
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-# helper functions:
-def get_a_secret(length):
-    salt = ''.join([random.choice('123456789abc') for i in xrange(3)])
-    return ' '.join([random.choice(simplewords) for i in xrange(length)]) + ' ' + salt
-
-def generate_secret():
-    # max number of words in secret:
-    max_secret_length = 4
-    cnt = 1
-    # start by trying a short secret:
-    full_secret = get_a_secret(2)
-    trimmed_secret = full_secret.replace(' ', '')
-    while Secret.objects.filter(secret__exact=trimmed_secret).count():
-        # need to try a different secret:
-        full_secret = get_a_secret(max_secret_length)
-        trimmed_secret = full_secret.replace(' ','')
-        cnt += 1
-        if cnt > 1000:
-            raise(BaseException("We were unable to generate a secret... Weird."))
-    return full_secret, trimmed_secret, cnt
-
-def index(request):
-    return render(request, 'index.html')
-
-
 def json_response(msg, success, **kwargs):
-    obj = {'msg': msg, 'success', success}
-    for k,v in **kwargs.iteritems():
+    obj = {'msg': msg, 'success': success}
+    for k,v in kwargs.iteritems():
         obj[k] = v
     json = dumps(obj)
     return HttpResponse(json, mimetype='application/json')
@@ -51,6 +25,10 @@ def json_failure(msg, **kwargs):
 
 def json_success(msg, **kwargs):
     return json_response(msg, True, **kwargs)
+
+
+def index(request):
+    return render(request, 'index.html')
 
 def ttt_put(request):
     required_args = ['lat', 'lon', 'acc', 'secret', 'speed']
@@ -110,7 +88,7 @@ def ttt_get(request):
         'accuracy': l.accuracy,
         'speed': l.speed,
         'date': l.date,
-    }] for l in locations
+    } for l in locations]
     return json_success('Succcess!', data={'locations': location_dicts})
 
 def live(request):
@@ -167,7 +145,7 @@ def new_test_point(request):
 def admin(request):
     user = request.user
     data = []
-    secrets = Secret.all()
+    secrets = Secret.objects.all()
     for s in secrets:
         data.append({
             'secret': s,

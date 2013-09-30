@@ -15,6 +15,17 @@ urlpatterns = patterns(
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
+    url(r'^accounts/register/$', 'ttt.views.register'),
+    url(r'^accounts/profile/$', 'ttt.views.profile'),
+    url(r'^accounts/password_change/$', 'django.contrib.auth.views.password_change'),
+    url(r'^accounts/password_change_done/$', 'django.contrib.auth.views.password_change_done'),
+    url(r'^accounts/password_reset/$', 'django.contrib.auth.views.password_reset'),
+    url(r'^accounts/password_reset_done/$', 'django.contrib.auth.views.password_reset_done'),
+    url(r'^accounts/password_reset_confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
+    url(r'^accounts/password_reset_complete/$', 'django.contrib.auth.views.password_reset_complete'),
 )
 
 urlpatterns += patterns(
@@ -28,6 +39,6 @@ urlpatterns += patterns(
     url(r'^download/$', 'download'),
     url(r'^secret/$', 'secret'),
     url(r'^new_test_point/$', 'new_test_point'),
-    url(r'^admin/$', 'admin'),
+    url(r'^ttt_admin/$', 'admin'),
     url(r'^view_data/$', 'view_data'),
 )
