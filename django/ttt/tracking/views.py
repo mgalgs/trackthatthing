@@ -37,6 +37,20 @@ def generate_secret():
 def index(request):
     return render(request, 'index.html')
 
+
+def json_response(msg, success, data=None):
+    obj = {'msg': msg, 'success', success}
+    if data is not None:
+        obj['data'] = data
+    json = dumps(obj)
+    return HttpResponse(json, mimetype='application/json')
+
+def json_failure(msg, data=None):
+    return json_response(msg, False)
+
+def json_success(msg, data=None):
+    return json_response(msg, False)
+
 def ttt_put(request):
     required_args = ['lat', 'lon', 'acc', 'secret', 'speed']
     valid_args = True
@@ -45,20 +59,14 @@ def ttt_put(request):
             valid_args = False
             break
     if not valid_args:
-        obj = {
-            'msg':'You must supply "lat", "lon", "acc", "speed", and "secret" arguments.',
-            'success':False
-        }
-        json = dumps(obj)
-        return HttpResponse(json, mimetype='application/json')
+        msg = 'You must supply "lat", "lon", "acc", "speed", and "secret" arguments.'
+        return json_failure(msg)
 
     sec = request.GET['secret']
     try:
         secret = Secret.objects.filter(secret__exact=sec).get()
     except Secret.DoesNotExist:
-        obj = {'msg':'Bad secret: "%s"...' % sec, 'success':False}
-        json = dumps(obj)
-        return HttpResponse(json, mimetype='application/json')
+        return json_failure('Bad secret: "%s"...' % sec)
 
     l = Location()
     l.latitude = float(request.GET['lat'])
@@ -70,12 +78,39 @@ def ttt_put(request):
         l.date = datetime.datetime.fromtimestamp(
             int(request.GET['date']))
     l.save()
-    obj = {'msg':'Success!','success':True}
-    json = dumps(obj)
-    return HttpResponse(json, mimetype='application/json')
+    return json_success('Success!')
 
 def ttt_get(request):
-    return render(request, 'get.html')
+    if 'secret' not in request.GET():
+        return json_failure('You must supply a secret.')
+
+    clean_secret = request.GET['secret'].replace(' ','')
+    try:
+        secret = Secret.objects().filter(secret__exact=clean_secret).get()
+    except Secret.DoesNotExist:
+        return json_failure('Invalid secret.')
+
+    user = sq.get().user
+    num_points = int(request.GET.get('n', DEFAULT_NUM_POINTS))
+    lq = Location.objects().filter(user__exact=user)
+    if 'last' in request.GET:
+        lq.filter(date__lt=str_to_date(request.GET['last']))
+    if 'oldness' in request.GET:
+        oldness = int(request.get['oldness'])
+        if oldness > 0 and oldness <= 2592000:
+            lq.filter(date__lt=
+                      datetime.datetime.now() -
+                      datetime.timedelta(0,oldness,0)
+            )
+    locations = lq.order('-date')[:num_points]
+    location_dicts = [{
+        'latitude': l.latitude,
+        'longitude': l.longitude,
+        'accuracy': l.accuracy,
+        'speed': l.speed,
+        'date': l.date,
+    }] for l in locations
+    return json_success('Succcess!', data={'locations': location_dicts})
 
 def live(request):
     return render(request, 'live.html')
