@@ -26,6 +26,12 @@ def json_failure(msg, **kwargs):
 def json_success(msg, **kwargs):
     return json_response(msg, True, **kwargs)
 
+def str_to_date(date_string):
+    'returns datetime.datetime object by parsing the passed-in string'
+    if '.' in date_string:
+        date_string = date_string[0:date_string.index('.')]
+    return datetime.datetime.strptime(date_string, DATE_FORMAT)
+
 
 def index(request):
     return render(request, 'index.html')
@@ -60,34 +66,34 @@ def ttt_put(request):
     return json_success('Success!')
 
 def ttt_get(request):
-    if 'secret' not in request.GET():
+    if 'secret' not in request.GET:
         return json_failure('You must supply a secret.')
 
     clean_secret = request.GET['secret'].replace(' ','')
     try:
-        secret = Secret.objects().filter(secret__exact=clean_secret).get()
+        secret = Secret.objects.filter(secret__exact=clean_secret).get()
     except Secret.DoesNotExist:
         return json_failure('Invalid secret.')
 
-    user = sq.get().user
+    user = secret.user
     num_points = int(request.GET.get('n', DEFAULT_NUM_POINTS))
-    lq = Location.objects().filter(user__exact=user)
+    lq = Location.objects.filter(user__exact=user)
     if 'last' in request.GET:
         lq.filter(date__lt=str_to_date(request.GET['last']))
     if 'oldness' in request.GET:
-        oldness = int(request.get['oldness'])
+        oldness = int(request.GET['oldness'])
         if oldness > 0 and oldness <= 2592000:
             lq.filter(date__lt=
                       datetime.datetime.now() -
                       datetime.timedelta(0,oldness,0)
             )
-    locations = lq.order('-date')[:num_points]
+    locations = lq.order_by('-date')[:num_points]
     location_dicts = [{
         'latitude': l.latitude,
         'longitude': l.longitude,
         'accuracy': l.accuracy,
         'speed': l.speed,
-        'date': l.date,
+        'date': str(l.date),
     } for l in locations]
     return json_success('Succcess!', data={'locations': location_dicts})
 
@@ -124,7 +130,7 @@ def new_test_point(request):
     newl = Location()
 
     try:
-        l = Location.objects().filter(user__exact=user).latest('date')
+        l = Location.objects.filter(user__exact=user).latest('date')
         newl.latitude = l.latitude + float(request.GET['lat_step'])
         newl.longitude= l.longitude + float(request.GET['lon_step'])
         newl.accuracy = l.accuracy + float(request.GET['acc_step'])
@@ -138,7 +144,7 @@ def new_test_point(request):
     newl.user = user
     newl.save()
 
-    msg = 'Test point added: ' + str(newl.to_dict())
+    msg = 'Test point added: ' + str(newl)
     return json_success(msg, title='Success!')
 
 @staff_member_required
@@ -169,14 +175,14 @@ def view_data(request):
 
     secret_txt = request.GET['secret']
     try:
-        secret = Secret.objects().filter(secret__exact=secret_txt).get()
+        secret = Secret.objects.filter(secret__exact=secret_txt).get()
     except Secret.DoesNotExist:
         return render(request, 'view_data.html', {
             'success': False
         })
 
     return render(request, 'view_data.html', {
-            'data': Location.objects().filter(user__exact=secret.user).order('-date')[:500],
+            'data': Location.objects.filter(user__exact=secret.user).order_by('-date')[:500],
             'secret_for_page': secret_txt,
             'success': True
             })
