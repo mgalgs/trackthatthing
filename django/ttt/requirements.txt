@@ -1,0 +1,12 @@
+Django==1.5.4
+distribute==0.6.34
+httplib2==0.8
+ipython==1.1.0
+oauth2==1.5.211
+oauthlib==0.6.0
+python-openid==2.2.5
+python-social-auth==0.1.13
+pytz==2013d
+requests==2.0.0
+requests-oauthlib==0.3.3
+six==1.4.1
