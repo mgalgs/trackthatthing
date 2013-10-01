@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.utils.simplejson import dumps
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.timezone import utc, now as django_now
 
 import datetime
 
@@ -30,7 +31,7 @@ def str_to_date(date_string):
     'returns datetime.datetime object by parsing the passed-in string'
     if '.' in date_string:
         date_string = date_string[0:date_string.index('.')]
-    return datetime.datetime.strptime(date_string, DATE_FORMAT)
+    return datetime.datetime.strptime(date_string, DATE_FORMAT).replace(tzinfo=utc)
 
 
 def index(request):
@@ -60,6 +61,7 @@ def ttt_put(request):
     l.speed = float(request.GET['speed'])
     l.user = secret.user
     if 'date' in request.GET:
+        print 'date is', date
         l.date = datetime.datetime.fromtimestamp(
             int(request.GET['date']))
     l.save()
@@ -79,14 +81,20 @@ def ttt_get(request):
     num_points = int(request.GET.get('n', DEFAULT_NUM_POINTS))
     lq = Location.objects.filter(user__exact=user)
     if 'last' in request.GET:
-        lq.filter(date__lt=str_to_date(request.GET['last']))
+        print 'filtering by last', request.GET['last']
+        print lq
+        lq = lq.filter(date__gt=str_to_date(request.GET['last']))
+        print lq
     if 'oldness' in request.GET:
         oldness = int(request.GET['oldness'])
         if oldness > 0 and oldness <= 2592000:
-            lq.filter(date__lt=
-                      datetime.datetime.now() -
-                      datetime.timedelta(0,oldness,0)
+            print 'filtering oldness', oldness
+            print lq
+            lq = lq.filter(date__gt=
+                      django_now() -
+                      datetime.timedelta(0, oldness, 0)
             )
+            print lq
     locations = lq.order_by('-date')[:num_points]
     location_dicts = [{
         'latitude': l.latitude,

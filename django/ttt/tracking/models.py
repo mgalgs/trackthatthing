@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils.timezone import now as django_now
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -9,7 +9,7 @@ class Location(models.Model):
     longitude = models.FloatField()
     accuracy = models.FloatField()
     speed = models.FloatField()
-    date = models.DateTimeField(default=datetime.now)
+    date = models.DateTimeField(default=django_now)
 
     def __unicode__(self):
         return "u=%s, lat=%f, lon=%f, acc=%f, speed=%f, date=%s" % (
