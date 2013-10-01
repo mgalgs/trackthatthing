@@ -3,12 +3,12 @@
 {% block content %}
 {% if user.is_authenticated %}
   <div id="secret-code-spot">
-    Hello, {{ current_user }}! Your secret code is: &quot;<span id="the-secret-code">{{ secret }}</span>&quot;.
+    Hello, {{ user }}! Your secret code is: &quot;<span id="the-secret-code">{{ secret }}</span>&quot;.
   </div>
 {% endif %}
 
 <div id="main-button-container">
-  {% if not current_user %}
+  {% if not user %}
     <a href="/accounts/login/" id="main-button" class="big-button">Get Secret!</a>
   {% endif %}
   <div class="instructions" style="width:550px; margin: 20px auto;">
