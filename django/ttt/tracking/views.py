@@ -82,19 +82,19 @@ def ttt_get(request):
     lq = Location.objects.filter(user__exact=user)
     if 'last' in request.GET:
         print 'filtering by last', request.GET['last']
-        print lq
+        print len(lq)
         lq = lq.filter(date__gt=str_to_date(request.GET['last']))
-        print lq
+        print len(lq)
     if 'oldness' in request.GET:
         oldness = int(request.GET['oldness'])
         if oldness > 0 and oldness <= 2592000:
             print 'filtering oldness', oldness
-            print lq
+            print len(lq)
             lq = lq.filter(date__gt=
                       django_now() -
                       datetime.timedelta(0, oldness, 0)
             )
-            print lq
+            print len(lq)
     locations = lq.order_by('-date')[:num_points]
     location_dicts = [{
         'latitude': l.latitude,
