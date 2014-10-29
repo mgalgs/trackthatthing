@@ -81,20 +81,14 @@ def ttt_get(request):
     num_points = int(request.GET.get('n', DEFAULT_NUM_POINTS))
     lq = Location.objects.filter(user__exact=user)
     if 'last' in request.GET:
-        print 'filtering by last', request.GET['last']
-        print len(lq)
-        lq = lq.filter(date__gt=str_to_date(request.GET['last']))
-        print len(lq)
+        lq = lq.filter(id__gt=request.GET['last'])
     if 'oldness' in request.GET:
         oldness = int(request.GET['oldness'])
         if oldness > 0 and oldness <= 2592000:
-            print 'filtering oldness', oldness
-            print len(lq)
             lq = lq.filter(date__gt=
                       django_now() -
                       datetime.timedelta(0, oldness, 0)
             )
-            print len(lq)
     locations = lq.order_by('-date')[:num_points]
     location_dicts = [{
         'latitude': l.latitude,
@@ -102,6 +96,7 @@ def ttt_get(request):
         'accuracy': l.accuracy,
         'speed': l.speed,
         'date': str(l.date),
+        'id': l.id,
     } for l in locations]
     return json_success('Succcess!', data={'locations': location_dicts})
 

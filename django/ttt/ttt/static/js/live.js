@@ -175,7 +175,7 @@ var add_new_points = function() {
         oldness:get_oldness()
     };
     if (data_points.length > 0) {
-        data['last'] = data_points[data_points.length-1]['raw'].date;
+        data['last'] = data_points[data_points.length-1]['raw'].id;
     }
     var data_url = '/get?' + $.param(data);
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
