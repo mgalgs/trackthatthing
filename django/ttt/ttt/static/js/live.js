@@ -89,7 +89,8 @@ var close_info_windows = function() {
 
 var draw_new_points = function(data) {
     if (data.length == 0) {
-        $("#how-many-points").html(current_overlays.length > 0 ? current_overlays.length-1 : 0);
+        $("#how-many-points")
+            .html(current_overlays.length > 0 ? current_overlays.length-1 : 0);
         return;
     }
     var the_coords = [];
@@ -128,31 +129,42 @@ var draw_new_points = function(data) {
     new_data_points.reverse();
     data_points = data_points.concat(new_data_points);
 
+    var should_draw_line = true;
 
     // just in case we only added one point:
-    if (new_data_points.length == 1 && data_points.length) {
-        the_coords = [
-            data_points[data_points.length-2]['ll'],
-            data_points[data_points.length-1]['ll']
-        ];
+    if (new_data_points.length == 1) {
+        if (data_points.length > 1) {
+            the_coords = [
+                data_points[data_points.length-2]['ll'],
+                data_points[data_points.length-1]['ll']
+            ];
+        } else {
+            // we only have one point total and it's the new point we
+            // got. don't draw a line.
+            should_draw_line = false;
+        }
     }
 
-    // Draw the line:
-    var the_path = new google.maps.Polyline({
-        path: the_coords,
-        strokeColor: "#0011AA",
-        strokeOpacity: 0.7,
-        strokeWeight: 5,
-        zIndex: 5
-    });
+    if (should_draw_line) {
+        // Draw the line:
+        var the_path = new google.maps.Polyline({
+            path: the_coords,
+            strokeColor: "#0011AA",
+            strokeOpacity: 0.7,
+            strokeWeight: 5,
+            zIndex: 5
+        });
 
-    current_overlays.push(the_path);
+        current_overlays.push(the_path);
+        the_path.setMap(the_map);
+        drew_a_line = true;
+    }
+
+
     current_overlays = current_overlays.concat(the_markers);
 
-
-    the_path.setMap(the_map);
-
-    $("#how-many-points").html(current_overlays.length-1);
+    $("#how-many-points")
+        .html(current_overlays.length - (drew_a_line ? 1 : 0));
 };
 
 
@@ -254,6 +266,7 @@ var current_overlays = [];
 var the_info_windows = [];
 var the_pushpins = [];
 var the_map = null;
+var drew_a_line = false;
 
 var refreshing_task_is_running = false;
 var refreshing_task_id = null;
