@@ -1,0 +1,25 @@
+Database Setup
+==============
+
+It's nice to set up your local machine with Postgres. Something like this
+should roughly get you there:
+
+    $ sudo vim /etc/postgresql/.../main/pg_hba.conf
+    # set the METHOD for local connection type to 'trust':
+    # local   all             all                                     trust
+
+    # if postgres server is not already started;
+    $ sudo /etc/init.d/postgresql start # or similar for your distro
+    # if it was already started, restart it to apply the above config change:
+    $ sudo /etc/init.d/postgresql restart # or similar for your distro
+
+You can choose whatever you want for the database name, database user name,
+and password for that database user.
+
+    $ sudo su postgres
+    $ createuser -s <DB_USER> -P # and type your chosen password
+    $ createdb <DB_NAME>
+    $ exit
+    # test your connection:
+    $ psql -U <DB_USER> <DB_NAME>
+    # if you got to a psql prompt then you're golden!

@@ -5,3 +5,4 @@ dev_appserver.datastore
 /tmp.db
 /django/ttt/ttt/ttt_local.py
 /django/ttt/database.db
+/django/ttt/ttt/local_settings.py
