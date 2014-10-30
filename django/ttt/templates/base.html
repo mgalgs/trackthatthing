@@ -18,8 +18,8 @@
     <!-- Include external files and scripts here (See HTML helper for more info.) -->
     <script src="http://www.google.com/jsapi?key=ABQIAAAAXi35bzrpwN2AF47hDQg7MxQaE1L9XjiIOiPGeXL1LsrjSbcemRT-77geU2wfXOO687R3eXaYUcmdZQ" type="text/javascript"></script>
     <script type="text/javascript">
-      google.load("jquery", "1.7.1");
-      google.load("jqueryui", "1.8.16");
+     google.load("jquery", "1.7.1");
+     google.load("jqueryui", "1.8.16");
     </script>
     <script type="text/javascript" src="/resources/js/defaultText.js"></script>
     <script type="text/javascript" src="/resources/js/buttonStyles.js"></script>
@@ -28,8 +28,8 @@
     {% block more_js %}{% endblock %}
 
     <!--
-        Icons on map pushpins by Joseph Wain: http://www.glyphish.com/
-      -->
+    Icons on map pushpins by Joseph Wain: http://www.glyphish.com/
+    -->
 
   </head>
   <body>
@@ -54,13 +54,13 @@
         <li class="menuitem"><a href="/about/">About</a></li>
         <li class="menuitem"><a href="/help/">Help</a></li>
         {% if user.is_staff %}
-        <li class="menuitem"><a href="/ttt_admin/">Admin</a></li>
+          <li class="menuitem"><a href="/ttt_admin/">Admin</a></li>
         {% endif %}
         <li class="menuitem right">
           {% if user.is_authenticated %}
-          <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="/accounts/logout/">Logout</a>
+            <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="/accounts/logout/">Logout</a>
           {% else %}
-          <a id="the-login-link" href="/accounts/login/">Login</a>
+            <a id="the-login-link" href="/accounts/login/">Login</a>
           {% endif %}
         </li>
       </ul>
@@ -73,11 +73,11 @@
     </div>
 
     {% if lsecret %}
-    <input type="hidden" name="secret" value="{{ lsecret }}" />
+      <input type="hidden" name="secret" value="{{ lsecret }}" />
     {% else %}
-    {% if secret %}
-    <input type="hidden" name="secret" value="{{ secret }}" />
-    {% endif %}
+      {% if secret %}
+        <input type="hidden" name="secret" value="{{ secret }}" />
+      {% endif %}
     {% endif %}
 
   </body>
