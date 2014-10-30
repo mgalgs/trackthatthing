@@ -107,7 +107,8 @@ STATICFILES_FINDERS = (
 )
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media/')
 
-TEMPLATE_CONTEXT_PROCESSORS += (
+from django.conf import global_settings
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     "ttt.context_processors.secret",
     "ttt.context_processors.this_year",
 )
