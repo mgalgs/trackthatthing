@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from django.utils.simplejson import dumps
+from json import dumps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.timezone import utc, now as django_now
 
