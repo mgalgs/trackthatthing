@@ -19,7 +19,7 @@ def json_response(msg, success, **kwargs):
     for k,v in kwargs.iteritems():
         obj[k] = v
     json = dumps(obj)
-    return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(json, content_type='application/json')
 
 def json_failure(msg, **kwargs):
     return json_response(msg, False, **kwargs)
