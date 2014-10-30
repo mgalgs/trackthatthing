@@ -58,7 +58,7 @@
         {% endif %}
         <li class="menuitem right">
           {% if user.is_authenticated %}
-            <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="/accounts/logout/">Logout</a>
+            <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="{% url 'auth:logout' %}?next={{ request.path }}">Logout</a>
           {% else %}
             <a id="the-login-link" href="/accounts/login/">Login</a>
           {% endif %}
