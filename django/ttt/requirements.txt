@@ -5,6 +5,7 @@ httplib2==0.9
 ipython==2.3.0
 oauth2==1.5.211
 oauthlib==0.7.1
+psycopg2==2.5.4
 python-openid==2.2.5
 python-social-auth==0.2.1
 pytz==2014.7
