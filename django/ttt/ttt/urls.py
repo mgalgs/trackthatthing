@@ -26,6 +26,8 @@ urlpatterns = patterns(
     url(r'^accounts/password_reset_done/$', 'django.contrib.auth.views.password_reset_done'),
     url(r'^accounts/password_reset_confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
     url(r'^accounts/password_reset_complete/$', 'django.contrib.auth.views.password_reset_complete'),
+
+    url('', include('social.apps.django_app.urls', namespace='social')),
 )
 
 urlpatterns += patterns(
