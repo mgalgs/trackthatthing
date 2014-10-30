@@ -91,6 +91,7 @@ PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 PROJECT_PARENT_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
 
 STATIC_ROOT = os.path.join(PROJECT_PATH, 'sitestatic/')
+STATIC_URL = '/resources/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -107,8 +108,44 @@ STATICFILES_FINDERS = (
 )
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media/')
 
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_PARENT_PATH, 'templates'),
+)
+
 from django.conf import global_settings
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     "ttt.context_processors.secret",
     "ttt.context_processors.this_year",
 )
+
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
