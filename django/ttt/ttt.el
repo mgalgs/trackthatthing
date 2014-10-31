@@ -1,12 +1,34 @@
-(defun ttt-manage-command (what)
+(defun ttt-run-command (what)
   (let ((compilation-buffer-name-function (lambda (mode)
                                             (format "*ttt-%s*" what))))
-    (compile (format "source ~/virtualenvs/ttt/bin/activate && cd ~/src/trackthatthing/django/ttt/ && python ./manage.py %s"
+    (compile (format "source ~/virtualenvs/ttt/bin/activate && cd ~/src/trackthatthing/django/ttt/ && %s"
                      what))))
 
 (defun ttt-runserver ()
   (interactive)
-  (ttt-manage-command "runserver"))
+  (ttt-run-command "python ./manage.py runserver"))
+
+(defvar ttt-run-history nil)
+
+(defun ttt-completing-read-must-match (prompt choices &optional require-match
+                                    initial-input history def inherit-input-method)
+    "Wrapper for `helm-comp-read' that also sets :must-match to t"
+    (helm-comp-read prompt
+                    choices
+                    :initial-input initial-input
+                    :default def
+                    :must-match t
+                    :history history
+                    ))
+
+(defun ttt-run (cmd)
+  (interactive (list (ttt-completing-read-must-match "Command to run: "
+                                                     '("python ./manage.py runserver"
+                                                       "python ./manage.py runserver_plus")
+                                                       nil
+                                                       nil
+                                                       ttt-run-history)))
+               (ttt-run-command (read-from-minibuffer "Command: " cmd)))
 
 (defun ttt-goto-setting (setting)
   (let ((settings-buffer (get-buffer "settings.py")))
