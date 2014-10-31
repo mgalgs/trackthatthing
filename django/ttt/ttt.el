@@ -24,7 +24,8 @@
 (defun ttt-run (cmd)
   (interactive (list (ttt-completing-read-must-match "Command to run: "
                                                      '("python ./manage.py runserver"
-                                                       "python ./manage.py runserver_plus")
+                                                       "python ./manage.py runserver_plus"
+                                                       "pip freeze --local > requirements.txt")
                                                        nil
                                                        nil
                                                        ttt-run-history)))
