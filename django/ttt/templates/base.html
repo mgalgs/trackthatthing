@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/resources/css/main.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/resources/css/big-button.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="/resources/css/jquery.gritter.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/resources/css3-social-signin-buttons/current/auth-buttons.css" type="text/css" media="screen" />
     {% block more_css %}{% endblock %}
 
 
@@ -58,9 +59,9 @@
         {% endif %}
         <li class="menuitem right">
           {% if user.is_authenticated %}
-            <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="{% url 'auth:logout' %}?next={{ request.path }}">Logout</a>
+            <span id="username"><a href="/live/">{{ user }}</a></span> | <a href="{% url 'auth:logout' %}?next=/">Logout</a>
           {% else %}
-            <a id="the-login-link" href="/accounts/login/">Login</a>
+            <a class="btn-auth btn-google" href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Sign in with <b>Google</b></a>
           {% endif %}
         </li>
       </ul>
