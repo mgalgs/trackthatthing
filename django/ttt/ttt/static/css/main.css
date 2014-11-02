@@ -62,6 +62,17 @@ ul#menubar li.menuitem {
 ul#menubar li.menuitem a:hover {
    background: #707070;
 }
+ul#menubar li.menuitem #login-button:hover {
+    background: inherit;
+}
+#login-button {
+    position: relative;
+    top: -11px;
+    left: 13px;
+}
+#login-button img {
+    width: 120px;
+}
 ul#menubar li.menuitem a {
    font-weight: bold;
    padding: 10px;
