@@ -19,7 +19,7 @@ a:visited {
 }
 #main-container {
    width: 950px;
-   margin: 0 auto;
+   margin: 15px auto;
    text-align: left;
    border: 2px solid #808080;
    padding: 25px;
@@ -28,6 +28,7 @@ a:visited {
    -khtml-border-radius: 20px;
    border-radius: 20px;
    background: snow;
+   box-shadow: 0px 0px 50px #707070;
 }
 #main-content {
    min-height: 300px;
