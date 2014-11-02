@@ -1,5 +1,0 @@
-cron:
-- description: clean up the datastore
-  url: /tasks/cleanup
-  schedule: every day 23:50
-  timezone: America/Los_Angeles
