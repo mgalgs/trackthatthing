@@ -48,7 +48,7 @@ def ttt_put(request):
         msg = 'You must supply "lat", "lon", "acc", "speed", and "secret" arguments.'
         return json_failure(msg)
 
-    sec = request.GET['secret']
+    sec = request.GET['secret'].replace(' ', '')
     try:
         secret = Secret.objects.filter(secret__exact=sec).get()
     except Secret.DoesNotExist:
