@@ -13,7 +13,7 @@ def register(request):
             if authuser is not None:
                 if authuser.is_active:
                     login(request, authuser)
-                    return HttpResponseRedirect('/accounts/profile/')
+                    return HttpResponseRedirect('/')
                 else:
                     # should never happen since we just created the account
                     extra_message = 'Your account has been disabled!'

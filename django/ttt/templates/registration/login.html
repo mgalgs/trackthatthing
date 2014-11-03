@@ -2,30 +2,8 @@
 
 {% block content %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-<a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
-
-<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-  {% csrf_token %}
-  <table>
-    <tr>
-      <td>{{ form.username.label_tag }}</td>
-      <td>{{ form.username }}</td>
-    </tr>
-    <tr>
-      <td>{{ form.password.label_tag }}</td>
-      <td>{{ form.password }}</td>
-    </tr>
-  </table>
-
-  <input type="submit" value="Login" />
-  <input type="hidden" name="next" value="{{ next }}" />
-</form>
-
-<p>Don't have an account yet? <a href="/accounts/register/">Register</a>.</p>
-<p>Forgot your password? Reset it <a href="/accounts/password_reset/">here</a>.</p>
+  <a id="login-button" href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+    <img src="/resources/images/Red-signin_Medium_base_44dp.png">
+  </a>
 
 {% endblock %}
