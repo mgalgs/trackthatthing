@@ -139,6 +139,8 @@ LOGIN_REDIRECT_URL = '/'
 # Credentials, create a new Client ID)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = local_settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = local_settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+# https://python-social-auth.readthedocs.org/en/latest/backends/google.html#user-identification
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
 
 
 # A sample logging configuration. The only tangible logging
