@@ -30,6 +30,5 @@ gunicorn ttt.wsgi:application \
 	--pid=$PIDFILE \
 	--log-file=$LOGFILE \
 	--workers=$NUM_GUNICORN_WORKERS \
-    --timeout=$TIMEOUT \
-    --daemon
+    --timeout=$TIMEOUT
 echo 'done!'
