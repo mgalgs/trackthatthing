@@ -61,7 +61,6 @@ def ttt_put(request):
     l.speed = float(request.GET['speed'])
     l.user = secret.user
     if 'date' in request.GET:
-        print 'date is', date
         l.date = datetime.datetime.fromtimestamp(
             int(request.GET['date']))
     l.save()
