@@ -25,6 +25,8 @@
   (interactive (list (ttt-completing-read-must-match "Command to run: "
                                                      '("python ./manage.py runserver"
                                                        "python ./manage.py runserver_plus"
+                                                       "python ./manage.py makemigrations"
+                                                       "python ./manage.py migrate"
                                                        "pip freeze --local > requirements.txt")
                                                        nil
                                                        nil
