@@ -26,3 +26,16 @@ class Secret(models.Model):
     secret_readable = models.CharField(max_length=200)
     secret = models.CharField(max_length=200)
     niters = models.IntegerField() # number of iterations it took to generate this unique secret
+
+
+# These were imported from the legacy ttt site.  If you are setting up your
+# own instance of ttt you don't need any of these.
+class OldSecret(models.Model):
+    email              = models.CharField(max_length=200)
+    user_id            = models.CharField(max_length=200)
+    nickname           = models.CharField(max_length=200)
+    auth_domain        = models.CharField(max_length=200)
+    federated_identity = models.CharField(max_length=200)
+    federated_provider = models.CharField(max_length=200)
+    secret             = models.CharField(max_length=200)
+    secret_readable    = models.CharField(max_length=200)
