@@ -92,10 +92,12 @@ public class MainActivity extends Activity {
     }
 
     private void stopTracking() {
+        mTracking = false;
         notTrackingUI();
     }
 
     private void startTracking() {
+        mTracking = true;
         yesTrackingUI();
     }
 
