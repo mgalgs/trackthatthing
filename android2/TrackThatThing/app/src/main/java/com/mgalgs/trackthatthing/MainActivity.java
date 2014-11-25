@@ -80,8 +80,8 @@ public class MainActivity extends Activity {
             case R.id.action_track:
                 toggleTracking();
                 return true;
-            case R.id.action_settings:
-                openSettings();
+            case R.id.action_secret:
+                launchSecretGetter();
                 return true;
         }
 

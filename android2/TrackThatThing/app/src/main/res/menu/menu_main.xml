@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_launcher"
         android:title="@string/action_track"
         android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_secret" android:title="@string/action_secret"
         android:orderInCategory="100" android:showAsAction="never" />
 
 </menu>
