@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,8 +16,10 @@ import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
+    public static final int ACTIVITY_RESULT_GET_SECRET = 0;
 
     private boolean mTracking;
+    private String mSecretCode;
 
     public static class NotTrackingFragment extends Fragment {
         @Override
@@ -40,10 +44,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_tracking);
         mTracking = false;
-        notTrackingUI();
+        UI_notTracking();
     }
 
-    private void notTrackingUI() {
+    private void UI_notTracking() {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         NotTrackingFragment ntf = new NotTrackingFragment();
@@ -51,7 +55,7 @@ public class MainActivity extends Activity {
         fragmentTransaction.commit();
     }
 
-    private void yesTrackingUI() {
+    private void UI_yesTracking() {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         YesTrackingFragment ytf = new YesTrackingFragment();
@@ -84,6 +88,21 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ACTIVITY_RESULT_GET_SECRET:
+                startTracking();
+                break;
+        }
+    }
+
+    public void launchSecretGetter() {
+        Intent i = new Intent(this, TheSecretGetter.class);
+        startActivityForResult(i, ACTIVITY_RESULT_GET_SECRET);
+    }
+
     private void toggleTracking() {
         if (mTracking)
             stopTracking();
@@ -93,12 +112,20 @@ public class MainActivity extends Activity {
 
     private void stopTracking() {
         mTracking = false;
-        notTrackingUI();
+        UI_notTracking();
     }
 
     private void startTracking() {
+        SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
+        mSecretCode = settings.getString(TrackThatThing.PREF_SECRET_CODE, null);
+
+        if (mSecretCode == null) {
+            launchSecretGetter();
+            return;
+        }
+
         mTracking = true;
-        yesTrackingUI();
+        UI_yesTracking();
     }
 
     private void openSettings() {

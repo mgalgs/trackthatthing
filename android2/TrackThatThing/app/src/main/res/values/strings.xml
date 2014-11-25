@@ -7,5 +7,7 @@
     <string name="action_track">Track</string>
     <string name="not_tracking">Not Tracking</string>
     <string name="yes_tracking">Tracking</string>
+    <string name="secret_code_save">Save</string>
+    <string name="secret_get_secret">Get Secret Code</string>
 
 </resources>
