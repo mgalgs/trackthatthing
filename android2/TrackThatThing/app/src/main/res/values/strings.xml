@@ -11,5 +11,6 @@
     <string name="secret_get_secret">Get Secret Code</string>
     <string name="hint_secret_code">secret code...</string>
     <string name="action_secret">Secret code</string>
+    <string name="with_code">with code:</string>
 
 </resources>

@@ -13,4 +13,13 @@
         android:id="@+id/yes_tracking"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/with_code"
+        android:id="@+id/tv_with_code"
+        android:layout_below="@+id/yes_tracking"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
