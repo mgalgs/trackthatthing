@@ -6,8 +6,11 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,16 +22,48 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        LocationListener {
     public static final int ACTIVITY_RESULT_GET_SECRET = 0;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
      */
-    public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    private static final String DIALOG_ERROR = "dialog_error";
+    private boolean mResolvingError = false;
+    private static final String STATE_RESOLVING_ERROR = "resolving_error";
+    private LocationClient mLocationClient;
+    LocationRequest mLocationRequest;
+
+
+    // Milliseconds per second
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+    // Update frequency in seconds
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
+    // Update frequency in milliseconds
+    private static final long UPDATE_INTERVAL =
+            MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
+    // The fastest update frequency, in seconds
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 3;
+    // A fast frequency ceiling in milliseconds
+    private static final long FASTEST_INTERVAL =
+            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
+    }
 
     private boolean mTracking;
     private String mSecretCode;
@@ -68,6 +103,21 @@ public class MainActivity extends Activity {
         setContentView(R.layout.layout_tracking);
         mTracking = false;
         UI_notTracking();
+
+        mLocationClient = new LocationClient(this, this, this);
+
+        // Create the LocationRequest object
+        mLocationRequest = LocationRequest.create();
+        // Use high accuracy
+        mLocationRequest.setPriority(
+                LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // Set the update interval to 5 seconds
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        // Set the fastest update interval to 1 second
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+
+        mResolvingError = savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
     }
 
     /**
@@ -91,46 +141,43 @@ public class MainActivity extends Activity {
             // Display an error dialog
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 0);
             if (dialog != null) {
-                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
-                errorFragment.setDialog(dialog);
-                errorFragment.show(getFragmentManager(), "Location Updates");
+                showErrorDialog(resultCode);
             }
             return false;
         }
+    }
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getFragmentManager(), "errordialog");
     }
 
     /**
      * Define a DialogFragment to display the error dialog generated in
      * showErrorDialog.
      */
+    /* A fragment to display an error dialog */
     public static class ErrorDialogFragment extends DialogFragment {
-
-        // Global field to contain the error dialog
-        private Dialog mDialog;
-
-        /**
-         * Default constructor. Sets the dialog field to null
-         */
         public ErrorDialogFragment() {
-            super();
-            mDialog = null;
         }
 
-        /**
-         * Set the dialog to display
-         *
-         * @param dialog An error dialog
-         */
-        public void setDialog(Dialog dialog) {
-            mDialog = dialog;
-        }
-
-        /*
-         * This method must return a Dialog to the DialogFragment.
-         */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return mDialog;
+            // Get the error code and retrieve the appropriate dialog
+            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+            return GooglePlayServicesUtil.getErrorDialog(errorCode,
+                    this.getActivity(), REQUEST_RESOLVE_ERROR);
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            ((MainActivity) getActivity()).onDialogDismissed();
         }
     }
 
@@ -183,19 +230,16 @@ public class MainActivity extends Activity {
             case ACTIVITY_RESULT_GET_SECRET:
                 startTracking();
                 break;
-            case CONNECTION_FAILURE_RESOLUTION_REQUEST :
-
-                switch (resultCode) {
-                    // If Google Play services resolved the problem
-                    case Activity.RESULT_OK:
-                        break;
-
-                    // If any other result was returned by Google Play services
-                    default:
-                        // Log the result
-                        Log.d(TrackThatThing.TAG, "CONNECTION_FAILURE_RESOLUTION_REQUEST didn't return RESULT_OK");
-                        break;
+            case REQUEST_RESOLVE_ERROR:
+                mResolvingError = false;
+                if (resultCode == RESULT_OK) {
+                    // Make sure the app is not already connected or attempting to connect
+                    if (!mLocationClient.isConnecting() &&
+                            !mLocationClient.isConnected()) {
+                        mLocationClient.connect();
+                    }
                 }
+                break;
         }
     }
 
@@ -228,7 +272,80 @@ public class MainActivity extends Activity {
             return;
         }
 
+        mLocationClient.connect();
         mTracking = true;
         UI_yesTracking();
+    }
+
+
+    /*
+     * Called by Location Services when the request to connect the
+     * client finishes successfully. At this point, you can
+    * request the current location or start periodic updates
+    */
+    @Override
+    public void onConnected(Bundle dataBundle) {
+        // Display the connection status
+        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+    }
+
+    /*
+     * Called by Location Services if the connection to the
+     * location client drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+        // Display the connection status
+        Toast.makeText(this, "Disconnected. Please re-connect.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    /*
+     * Called by Location Services if the attempt to
+     * Location Services fails.
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (result.hasResolution()) {
+            try {
+                mResolvingError = true;
+                result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mLocationClient.connect();
+            }
+        } else {
+            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
+            showErrorDialog(result.getErrorCode());
+            mResolvingError = true;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        if (mLocationClient.isConnected()) {
+            mLocationClient.removeLocationUpdates(this);
+        }
+        mLocationClient.disconnect();
+        super.onStop();
+    }
+
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        // Report to the UI that the location was updated
+        String msg = "Updated Location: " +
+                Double.toString(location.getLatitude()) + "," +
+                Double.toString(location.getLongitude());
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Log.d(TrackThatThing.TAG, msg);
     }
 }
