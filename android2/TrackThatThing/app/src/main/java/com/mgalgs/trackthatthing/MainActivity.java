@@ -117,7 +117,8 @@ public class MainActivity extends Activity implements
                     android.content.Context.MODE_PRIVATE);
             String last = settings.getString(TrackThatThing.PREF_LAST_LOC_TIME, "a long time ago...");
             TextView tv = (TextView) view.findViewById(R.id.tv_last_update);
-            tv.setText(getString(R.string.last_update) + " " + last);
+            if (tv != null)
+                tv.setText(context.getString(R.string.last_update) + " " + last);
         }
     }
 
