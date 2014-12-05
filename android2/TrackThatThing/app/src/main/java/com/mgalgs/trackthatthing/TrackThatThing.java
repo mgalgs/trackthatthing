@@ -5,7 +5,8 @@ package com.mgalgs.trackthatthing;
  */
 public class TrackThatThing {
     public static final String TAG = "TrackThatThing";
-    public static final String BASE_URL = "http://www.trackthatthing.com";
+    public static final String BASE_URL = "http://trackthatthing.com";
+//    public static final String BASE_URL = "http://10.0.2.2:8000";
     public static final String PREFS_NAME = "TTTPrefsFile";
     public static final String PREF_SECRET_CODE = "secret_code";
     public static final String PREF_SLEEP_TIME = "sleep_time";

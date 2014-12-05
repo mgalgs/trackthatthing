@@ -6,12 +6,15 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +30,12 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 public class MainActivity extends Activity implements
@@ -45,6 +54,8 @@ public class MainActivity extends Activity implements
     private LocationClient mLocationClient;
     LocationRequest mLocationRequest;
 
+    Handler mHandler = new Handler();
+
 
     // Milliseconds per second
     private static final int MILLISECONDS_PER_SECOND = 1000;
@@ -58,6 +69,10 @@ public class MainActivity extends Activity implements
     // A fast frequency ceiling in milliseconds
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+
+    private NotTrackingFragment mNotTrackingFragment = new NotTrackingFragment();
+    private YesTrackingFragment mYesTrackingFragment = new YesTrackingFragment();
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -86,6 +101,7 @@ public class MainActivity extends Activity implements
 
             MainActivity mainActivity = (MainActivity) getActivity();
             updateSecretCode(mainActivity.mSecretCode, rootView);
+            updateLastLoc(mainActivity.getApplicationContext(), rootView);
 
             return rootView;
         }
@@ -94,6 +110,14 @@ public class MainActivity extends Activity implements
             // update the secret code text view
             TextView tv = (TextView) rootView.findViewById(R.id.tv_with_code);
             tv.setText(getString(R.string.with_code) + " " + secretCode);
+        }
+
+        public void updateLastLoc(Context context, View view) {
+            SharedPreferences settings = context.getSharedPreferences(TrackThatThing.PREFS_NAME,
+                    android.content.Context.MODE_PRIVATE);
+            String last = settings.getString(TrackThatThing.PREF_LAST_LOC_TIME, "a long time ago...");
+            TextView tv = (TextView) view.findViewById(R.id.tv_last_update);
+            tv.setText(getString(R.string.last_update) + " " + last);
         }
     }
 
@@ -185,16 +209,14 @@ public class MainActivity extends Activity implements
     private void UI_notTracking() {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        NotTrackingFragment ntf = new NotTrackingFragment();
-        fragmentTransaction.replace(R.id.tracking_fragment_container, ntf);
+        fragmentTransaction.replace(R.id.tracking_fragment_container, mNotTrackingFragment);
         fragmentTransaction.commit();
     }
 
     private void UI_yesTracking() {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        YesTrackingFragment ytf = new YesTrackingFragment();
-        fragmentTransaction.replace(R.id.tracking_fragment_container, ytf);
+        fragmentTransaction.replace(R.id.tracking_fragment_container, mYesTrackingFragment);
         fragmentTransaction.commit();
     }
 
@@ -347,5 +369,72 @@ public class MainActivity extends Activity implements
                 Double.toString(location.getLongitude());
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         Log.d(TrackThatThing.TAG, msg);
+
+        SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
+
+        long lastLocTime = SystemClock.elapsedRealtime();
+
+        float acc = location.getAccuracy();
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+        float speed = location.getSpeed();
+
+        String secret_code = settings.getString(TrackThatThing.PREF_SECRET_CODE, null);
+
+        QueryString qs = new QueryString(TrackThatThing.BASE_URL + "/put");
+        qs.add("secret", secret_code);
+        qs.add("lat", Double.toString(lat));
+        qs.add("lon", Double.toString(lon));
+        qs.add("acc", Float.toString(acc));
+        qs.add("speed", Float.toString(speed));
+
+        Runnable r = new MyInternetThread(qs);
+        new Thread(r).start();
+
+        Log.d(TrackThatThing.TAG, "got this location: " + location.toString());
     }
+
+    // A runnable for the HTTP request
+    public class MyInternetThread implements Runnable {
+        public final QueryString qs;
+
+        public MyInternetThread(QueryString qs_) {
+            qs = qs_;
+        }
+
+        public void run() {
+            try {
+                JSONObject json = RestClient.connect(qs.toString());
+                Log.i(TrackThatThing.TAG,
+                        "Got the following response from the server: "
+                                + json.getString("msg"));
+                SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME,
+                        android.content.Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = settings.edit();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss a yyyy-MM-dd");
+                Calendar cal = Calendar.getInstance();
+
+                editor.putString(TrackThatThing.PREF_LAST_LOC_TIME,
+                        sdf.format(cal.getTime()));
+                editor.commit();
+
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mYesTrackingFragment.updateLastLoc(getApplicationContext(), getWindow().getDecorView().getRootView());
+                    }
+                });
+            } catch (JSONException e) {
+                Log.e(TrackThatThing.TAG,
+                        "couldn't get \"msg\" out of JSON object...");
+                e.printStackTrace();
+            } catch (Exception e) {
+                Log.e(TrackThatThing.TAG,
+                        "Something went wrong while trying to make the JSON object...");
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

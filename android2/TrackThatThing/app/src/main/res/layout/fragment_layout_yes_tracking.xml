@@ -22,4 +22,13 @@
         android:id="@+id/tv_with_code"
         android:layout_below="@+id/yes_tracking"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/last_update"
+        android:id="@+id/tv_last_update"
+        android:layout_below="@+id/tv_with_code"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
