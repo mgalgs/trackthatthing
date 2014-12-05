@@ -348,4 +348,6 @@ $(function() {
 
     // set up the inactivity timer:
     start_inactivity_timer();
+
+    enable_auto_refresh();
 });
