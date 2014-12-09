@@ -10,8 +10,11 @@
     <string name="secret_code_save">Save</string>
     <string name="secret_get_secret">Get Secret Code</string>
     <string name="hint_secret_code">secret code...</string>
-    <string name="action_secret">Secret code</string>
+    <string name="action_secret">Edit secret code</string>
     <string name="with_code">with code:</string>
     <string name="last_update">last update:</string>
+    <string name="share">Share</string>
+    <string name="location_service_started">TrackThatThing Running</string>
+    <string name="touch_to_stop">Touch to stop</string>
 
 </resources>

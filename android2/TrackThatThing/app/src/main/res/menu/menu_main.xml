@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_launcher"
         android:title="@string/action_track"
         android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_share"
+        android:icon="@drawable/ic_plusone_standard_off_client"
+        android:title="@string/share"
+        android:showAsAction="ifRoom" />
     <item android:id="@+id/action_secret" android:title="@string/action_secret"
         android:orderInCategory="100" android:showAsAction="never" />
 
