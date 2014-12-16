@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -104,9 +105,15 @@ public class MainActivity extends Activity {
             SharedPreferences settings = context.getSharedPreferences(TrackThatThing.PREFS_NAME,
                     android.content.Context.MODE_PRIVATE);
             String last = settings.getString(TrackThatThing.PREF_LAST_LOC_TIME, "a long time ago...");
+            if (mView == null) {
+                Log.d(TrackThatThing.TAG, "We don't have an mView yet. Not updating last loc tv.");
+                return;
+            }
             TextView tv = (TextView) mView.findViewById(R.id.tv_last_update);
             if (tv != null)
                 tv.setText(context.getString(R.string.last_update) + " " + last);
+            else
+                Log.d(TrackThatThing.TAG, "tv is null.  not setting last loc tv");
         }
     }
 
@@ -258,23 +265,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private MyLocationService mLocationService;
-
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mLocationService = ((MyLocationService.LocalBinder)service).getService();
-
-            Log.d(TrackThatThing.TAG, "Service connected");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mLocationService = null;
-        }
-    };
-
-
     public void launchSecretGetter() {
         Intent i = new Intent(this, TheSecretGetter.class);
         startActivityForResult(i, ACTIVITY_RESULT_GET_SECRET);
@@ -307,7 +297,8 @@ public class MainActivity extends Activity {
     }
 
     private void stopTracking() {
-        stopService(mLocationServiceIntent);
+        if (mLocationServiceIntent != null)
+            stopService(mLocationServiceIntent);
         mTracking = false;
         UI_notTracking();
     }
@@ -325,20 +316,25 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mLocUpdateReceiver, new IntentFilter(TrackThatThing.IF_LOC_UPDATE));
+        if (mTracking)
+            mYesTrackingFragment.updateLastLoc(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLocUpdateReceiver, new IntentFilter(TrackThatThing.IF_LOC_UPDATE));
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(mLocUpdateReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocUpdateReceiver);
         super.onPause();
     }
 
     private BroadcastReceiver mLocUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mYesTrackingFragment.updateLastLoc(context);
-            this.setResultCode(Activity.RESULT_OK);
+            if (intent.getAction().equals(TrackThatThing.IF_LOC_UPDATE)) {
+                mYesTrackingFragment.updateLastLoc(context);
+            } else {
+                Log.d(TrackThatThing.TAG, "UNKNOWN INTENT RECEIVED -- WHAT THE?!?!");
+            }
         }
     };
 }

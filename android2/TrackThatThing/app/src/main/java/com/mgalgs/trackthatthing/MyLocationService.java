@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -15,6 +16,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -76,6 +78,10 @@ public class MyLocationService extends Service implements
 
     @Override
     public void onCreate() {
+        super.onCreate();
+
+        Log.d(TrackThatThing.TAG, "onCreate()'ing. connecting location client...");
+
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         mLocationClient = new LocationClient(this, this, this);
@@ -116,6 +122,8 @@ public class MyLocationService extends Service implements
 
         // Tell the user we stopped.
         Toast.makeText(this, "Stopped MyLocationService", Toast.LENGTH_SHORT).show();
+
+        super.onDestroy();
     }
 
     @Override
@@ -140,6 +148,7 @@ public class MyLocationService extends Service implements
                 .setSmallIcon(R.drawable.powered_by_google_light)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setOngoing(true)
                 .build();
 //        Notification notification = new Notification(R.drawable.stat_sample, text,
 //                System.currentTimeMillis());
@@ -152,29 +161,6 @@ public class MyLocationService extends Service implements
         mNM.notify(NOTIFICATION, notification);
     }
 
-    /**
-     * Define a DialogFragment to display the error dialog generated in
-     * showErrorDialog.
-     */
-    public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() {
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Get the error code and retrieve the appropriate dialog
-            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
-            return GooglePlayServicesUtil.getErrorDialog(errorCode,
-                    this.getActivity(), REQUEST_RESOLVE_ERROR);
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            ((MainActivity) getActivity()).onDialogDismissed();
-        }
-    }
-
-
 
     /*
      * Called by Location Services when the request to connect the
@@ -184,6 +170,7 @@ public class MyLocationService extends Service implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
+        Log.d(TrackThatThing.TAG, "location services connected!");
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
     }
@@ -194,6 +181,7 @@ public class MyLocationService extends Service implements
      */
     @Override
     public void onDisconnected() {
+        Log.d(TrackThatThing.TAG, "Location services disconnected!");
         // Display the connection status
         Toast.makeText(this, "Disconnected. Please re-connect.",
                 Toast.LENGTH_SHORT).show();
@@ -205,22 +193,8 @@ public class MyLocationService extends Service implements
      */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        if (mResolvingError) {
-            // Already attempting to resolve an error.
-            return;
-        } else if (result.hasResolution()) {
-            try {
-                mResolvingError = true;
-                result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
-            } catch (IntentSender.SendIntentException e) {
-                // There was an error with the resolution intent. Try again.
-                mLocationClient.connect();
-            }
-        } else {
-            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
-            showErrorDialog(result.getErrorCode());
-            mResolvingError = true;
-        }
+        Log.d(TrackThatThing.TAG, "Location services connection failed!");
+        Toast.makeText(this, "Location services connection failed!!!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -267,7 +241,7 @@ public class MyLocationService extends Service implements
         public void run() {
             try {
                 JSONObject json = RestClient.connect(qs.toString());
-                Log.i(TrackThatThing.TAG,
+                Log.d(TrackThatThing.TAG,
                         "Got the following response from the server: "
                                 + json.getString("msg"));
                 SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME,
@@ -280,6 +254,10 @@ public class MyLocationService extends Service implements
                 editor.putString(TrackThatThing.PREF_LAST_LOC_TIME,
                         sdf.format(cal.getTime()));
                 editor.commit();
+
+                Intent i = new Intent(TrackThatThing.IF_LOC_UPDATE);
+                Log.d(TrackThatThing.TAG, "Pinging UI");
+                LocalBroadcastManager.getInstance(MyLocationService.this).sendBroadcast(i);
 
 //                mHandler.post(new Runnable() {
 //                    @Override
