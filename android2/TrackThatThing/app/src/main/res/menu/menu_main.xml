@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
     <item android:id="@+id/action_track"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_action_location_found"
         android:title="@string/action_track"
         android:showAsAction="ifRoom" />
     <item android:id="@+id/action_share"
-        android:icon="@drawable/ic_plusone_standard_off_client"
+        android:icon="@drawable/ic_action_share"
         android:title="@string/share"
         android:showAsAction="ifRoom" />
     <item android:id="@+id/action_secret" android:title="@string/action_secret"

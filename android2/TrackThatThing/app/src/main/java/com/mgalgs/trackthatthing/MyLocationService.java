@@ -44,12 +44,12 @@ public class MyLocationService extends Service implements
     // Milliseconds per second
     private static final int MILLISECONDS_PER_SECOND = 1000;
     // Update frequency in seconds
-    public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
+    public static final int UPDATE_INTERVAL_IN_SECONDS = 8;
     // Update frequency in milliseconds
     private static final long UPDATE_INTERVAL =
             MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS;
     // The fastest update frequency, in seconds
-    private static final int FASTEST_INTERVAL_IN_SECONDS = 3;
+    private static final int FASTEST_INTERVAL_IN_SECONDS = 5;
     // A fast frequency ceiling in milliseconds
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
@@ -88,12 +88,9 @@ public class MyLocationService extends Service implements
 
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create();
-        // Use high accuracy
         mLocationRequest.setPriority(
                 LocationRequest.PRIORITY_HIGH_ACCURACY);
-        // Set the update interval to 5 seconds
         mLocationRequest.setInterval(UPDATE_INTERVAL);
-        // Set the fastest update interval to 1 second
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
         mLocationClient.connect();
@@ -149,7 +146,7 @@ public class MyLocationService extends Service implements
 
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.powered_by_google_light)
+                .setSmallIcon(R.drawable.ic_ttt_icon)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
@@ -255,7 +252,6 @@ public class MyLocationService extends Service implements
                 editor.commit();
 
                 Intent i = new Intent(TrackThatThing.IF_LOC_UPDATE);
-                Log.d(TrackThatThing.TAG, "Pinging UI");
                 LocalBroadcastManager.getInstance(MyLocationService.this).sendBroadcast(i);
 
 //                mHandler.post(new Runnable() {

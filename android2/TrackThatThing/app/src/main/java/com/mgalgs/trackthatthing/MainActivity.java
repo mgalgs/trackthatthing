@@ -60,6 +60,7 @@ public class MainActivity extends Activity {
 
     private NotTrackingFragment mNotTrackingFragment = new NotTrackingFragment();
     private YesTrackingFragment mYesTrackingFragment = new YesTrackingFragment();
+    private MenuItem mTrackMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,12 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        updateActionBar();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
     }
@@ -107,6 +114,8 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mTrackMenuItem = menu.findItem(R.id.action_track);
+        updateActionBar();
         return true;
     }
 
@@ -262,6 +271,16 @@ public class MainActivity extends Activity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.tracking_fragment_container, mYesTrackingFragment);
         fragmentTransaction.commit();
+        mTrackMenuItem.setIcon(R.drawable.ic_action_location_found);
+    }
+
+    private void updateActionBar() {
+        if (mTrackMenuItem != null) {
+            if (mTracking)
+                mTrackMenuItem.setIcon(R.drawable.ic_action_location_found);
+            else
+                mTrackMenuItem.setIcon(R.drawable.ic_action_location_searching);
+        }
     }
 
     private void share()
@@ -315,6 +334,7 @@ public class MainActivity extends Activity {
 
         mTracking = true;
         UI_yesTracking();
+        updateActionBar();
     }
 
     private void stopTracking() {
@@ -322,6 +342,7 @@ public class MainActivity extends Activity {
             stopService(mLocationServiceIntent);
         mTracking = false;
         UI_notTracking();
+        updateActionBar();
     }
 
     /* Called from ErrorDialogFragment when the dialog is dismissed. */
