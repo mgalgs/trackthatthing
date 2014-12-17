@@ -121,7 +121,7 @@ public class MyLocationService extends Service implements
         mLocationClient.disconnect();
 
         // Tell the user we stopped.
-        Toast.makeText(this, "Stopped MyLocationService", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
 
         super.onDestroy();
     }
@@ -143,19 +143,20 @@ public class MyLocationService extends Service implements
         CharSequence title = getText(R.string.location_service_started);
         CharSequence text = getText(R.string.touch_to_stop);
 
+        // The PendingIntent to launch our activity if the user selects this notification
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class), 0);
+
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.powered_by_google_light)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
+                .setContentIntent(contentIntent)
                 .build();
 //        Notification notification = new Notification(R.drawable.stat_sample, text,
 //                System.currentTimeMillis());
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
 
         // Send the notification.
         mNM.notify(NOTIFICATION, notification);
@@ -171,7 +172,6 @@ public class MyLocationService extends Service implements
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
         Log.d(TrackThatThing.TAG, "location services connected!");
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
     }
 
@@ -203,7 +203,6 @@ public class MyLocationService extends Service implements
         String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         Log.d(TrackThatThing.TAG, msg);
 
         SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
