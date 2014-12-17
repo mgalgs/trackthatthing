@@ -14,7 +14,7 @@
     <string name="with_code">with code:</string>
     <string name="last_update">last update:</string>
     <string name="share">Share</string>
-    <string name="location_service_started">TrackThatThing Running</string>
-    <string name="touch_to_stop">Touch to stop</string>
+    <string name="location_service_started">Track That Thing</string>
+    <string name="touch_to_stop">Tracking</string>
 
 </resources>
