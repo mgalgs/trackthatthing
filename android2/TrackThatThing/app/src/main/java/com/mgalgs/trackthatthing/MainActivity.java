@@ -53,12 +53,48 @@ public class MainActivity extends Activity {
     private static final String STATE_TRACKING = "tracking";
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
+    private boolean mTracking;
+    private String mSecretCode;
 
     Handler mHandler = new Handler();
 
     private NotTrackingFragment mNotTrackingFragment = new NotTrackingFragment();
     private YesTrackingFragment mYesTrackingFragment = new YesTrackingFragment();
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_tracking);
+
+        mTracking = savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_TRACKING, false);
+
+        Log.d(TrackThatThing.TAG, "onCreate, mTracking = " + (new Boolean(mTracking)).toString());
+
+        if (mTracking)
+            startTracking();
+        else
+            stopTracking();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mTracking)
+            mYesTrackingFragment.updateLastLoc(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mLocUpdateReceiver, new IntentFilter(TrackThatThing.IF_LOC_UPDATE));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocUpdateReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -67,8 +103,44 @@ public class MainActivity extends Activity {
         outState.putBoolean(STATE_TRACKING, mTracking);
     }
 
-    private boolean mTracking;
-    private String mSecretCode;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch (item.getItemId()) {
+            case R.id.action_track:
+                toggleTracking();
+                return true;
+            case R.id.action_secret:
+                launchSecretGetter();
+                return true;
+            case R.id.action_share:
+                share();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ACTIVITY_RESULT_GET_SECRET:
+                startTracking();
+                break;
+        }
+    }
+
 
     public static class NotTrackingFragment extends Fragment {
         @Override
@@ -115,19 +187,6 @@ public class MainActivity extends Activity {
             else
                 Log.d(TrackThatThing.TAG, "tv is null.  not setting last loc tv");
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_tracking);
-
-        mTracking = savedInstanceState != null
-            && savedInstanceState.getBoolean(STATE_TRACKING, false);
-        if (mTracking)
-            startTracking();
-        else
-            stopTracking();
     }
 
     /**
@@ -205,34 +264,6 @@ public class MainActivity extends Activity {
         fragmentTransaction.commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        switch (item.getItemId()) {
-            case R.id.action_track:
-                toggleTracking();
-                return true;
-            case R.id.action_secret:
-                launchSecretGetter();
-                return true;
-            case R.id.action_share:
-                share();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void share()
     {
         String subject = "See where I'm at in real-time!";
@@ -254,16 +285,6 @@ public class MainActivity extends Activity {
         startActivity(Intent.createChooser(theIntent, "Send Location"));
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ACTIVITY_RESULT_GET_SECRET:
-                startTracking();
-                break;
-        }
-    }
 
     public void launchSecretGetter() {
         Intent i = new Intent(this, TheSecretGetter.class);
@@ -303,28 +324,9 @@ public class MainActivity extends Activity {
         UI_notTracking();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
     /* Called from ErrorDialogFragment when the dialog is dismissed. */
     public void onDialogDismissed() {
         mResolvingError = false;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mTracking)
-            mYesTrackingFragment.updateLastLoc(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mLocUpdateReceiver, new IntentFilter(TrackThatThing.IF_LOC_UPDATE));
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocUpdateReceiver);
-        super.onPause();
     }
 
     private BroadcastReceiver mLocUpdateReceiver = new BroadcastReceiver() {
