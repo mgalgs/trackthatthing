@@ -19,6 +19,8 @@ public class TrackSomeoneActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_track_someone);
+
         Button btn = (Button) findViewById(R.id.btn_apply_someones_secret);
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -27,9 +29,7 @@ public class TrackSomeoneActivity extends Activity
                 Log.d(TrackThatThing.TAG, "Have text: " + someones_secret);
             }
         });
-        setContentView(R.layout.activity_track_someone);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
