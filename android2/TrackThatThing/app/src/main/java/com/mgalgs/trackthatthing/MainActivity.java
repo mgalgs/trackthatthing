@@ -135,6 +135,10 @@ public class MainActivity extends Activity {
             case R.id.action_share:
                 share();
                 return true;
+            case R.id.action_track_someone:
+                Intent i = new Intent(this, TrackSomeoneActivity.class);
+                startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -149,7 +153,6 @@ public class MainActivity extends Activity {
                 break;
         }
     }
-
 
     public static class NotTrackingFragment extends Fragment {
         @Override

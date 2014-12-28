@@ -1,31 +1,24 @@
 package com.mgalgs.trackthatthing;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,12 +26,16 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * Reference:
+ * https://github.com/googlesamples/android-play-location/blob/master/LocationUpdates/app/src/main/java/com/google/android/gms/location/sample/locationupdates/MainActivity.java
+ */
+
 public class MyLocationService extends Service implements
-        GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
 
     // Milliseconds per second
@@ -54,6 +51,7 @@ public class MyLocationService extends Service implements
     private static final long FASTEST_INTERVAL =
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
     private boolean mResolvingError = false;
+    private GoogleApiClient mGoogleApiClient;
 
 
     public MyLocationService() {
@@ -84,8 +82,6 @@ public class MyLocationService extends Service implements
 
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-        mLocationClient = new LocationClient(this, this, this);
-
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(
@@ -93,7 +89,7 @@ public class MyLocationService extends Service implements
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
-        mLocationClient.connect();
+        buildGoogleApiClient();
 
         // Display a notification about us starting.  We put an icon in the status bar.
         showNotification();
@@ -102,6 +98,7 @@ public class MyLocationService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("MyLocationService", "Received start id " + startId + ": " + intent);
+        mGoogleApiClient.connect();
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
@@ -112,15 +109,22 @@ public class MyLocationService extends Service implements
         // Cancel the persistent notification.
         mNM.cancel(NOTIFICATION);
 
-        if (mLocationClient.isConnected()) {
-            mLocationClient.removeLocationUpdates(this);
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
         }
-        mLocationClient.disconnect();
 
         // Tell the user we stopped.
         Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
 
         super.onDestroy();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -166,22 +170,29 @@ public class MyLocationService extends Service implements
     * request the current location or start periodic updates
     */
     @Override
-    public void onConnected(Bundle dataBundle) {
+    public void onConnected(Bundle connectionHint) {
         // Display the connection status
         Log.d(TrackThatThing.TAG, "location services connected!");
-        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+        startLocationUpdates();
     }
 
-    /*
-     * Called by Location Services if the connection to the
-     * location client drops because of an error.
+    /**
+     * Requests location updates from the FusedLocationApi.
      */
+    protected void startLocationUpdates() {
+        // The final argument to {@code requestLocationUpdates()} is a LocationListener
+        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
     @Override
-    public void onDisconnected() {
-        Log.d(TrackThatThing.TAG, "Location services disconnected!");
-        // Display the connection status
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TrackThatThing.TAG, "Connection suspended");
+        Toast.makeText(this, "Location services connection suspended!", Toast.LENGTH_SHORT).show();
+        mGoogleApiClient.connect();
     }
 
     /*
@@ -190,7 +201,7 @@ public class MyLocationService extends Service implements
      */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.d(TrackThatThing.TAG, "Location services connection failed!");
+        Log.i(TrackThatThing.TAG, "Location services connection failed!");
         Toast.makeText(this, "Location services connection failed!!!", Toast.LENGTH_SHORT).show();
     }
 
@@ -204,7 +215,7 @@ public class MyLocationService extends Service implements
 
         SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
 
-        long lastLocTime = SystemClock.elapsedRealtime();
+        // long lastLocTime = SystemClock.elapsedRealtime();
 
         float acc = location.getAccuracy();
         double lat = location.getLatitude();
@@ -249,7 +260,7 @@ public class MyLocationService extends Service implements
 
                 editor.putString(TrackThatThing.PREF_LAST_LOC_TIME,
                         sdf.format(cal.getTime()));
-                editor.commit();
+                editor.apply();
 
                 Intent i = new Intent(TrackThatThing.IF_LOC_UPDATE);
                 LocalBroadcastManager.getInstance(MyLocationService.this).sendBroadcast(i);

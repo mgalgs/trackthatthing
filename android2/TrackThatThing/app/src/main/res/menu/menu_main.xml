@@ -9,6 +9,8 @@
         android:icon="@drawable/ic_action_share"
         android:title="@string/share"
         android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_track_someone" android:title="@string/action_track_someone"
+        android:orderInCategory="100" android:showAsAction="never" />
     <item android:id="@+id/action_secret" android:title="@string/action_secret"
         android:orderInCategory="100" android:showAsAction="never" />
 
