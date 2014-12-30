@@ -137,6 +137,7 @@ public class MainActivity extends Activity {
                 return true;
             case R.id.action_track_someone:
                 Intent i = new Intent(this, TrackSomeoneActivity.class);
+                i.putExtra("secret", "test secret");
                 startActivity(i);
                 return true;
         }
