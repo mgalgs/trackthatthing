@@ -5,13 +5,10 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,7 +23,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 
 
@@ -43,7 +39,32 @@ public class TrackSomeoneActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_track_someone_else);
+        setContentView(R.layout.layout_loading);
+        Log.d(TrackThatThing.TAG, "TrackSomeoneActivity->onCreate()");
+        // final ProgressDialog dlg = ProgressDialog.show(this, "Loading", "Please wait...");
+
+        // this little handler just buys us enough time to render the skeleton
+        // "loading" layout before spinning up the heavyweight layout_track_someone_else
+        // there should be a better way of doing this (inflating the heavyweight layout
+        // on a background thread (i.e. actually render it off the ui thread somehow?))
+        (new Handler(Looper.getMainLooper())).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setContentView(R.layout.layout_track_someone_else);
+                Log.d(TrackThatThing.TAG, "layout_track_someone_else loaded!");
+                // dlg.dismiss();
+
+                MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.the_map);
+                if (mapFragment == null) {
+                    Log.e(TrackThatThing.TAG, "mapFragment is null!!!!");
+                }
+                mapFragment.getMapAsync(TrackSomeoneActivity.this);
+            }
+        }, 1000);
+
+        // NOTE:
+        // don't do anything with things in layout_track_someone_else below here
+        // since we load it in the handler above
 
         String url = getIntent().getDataString();
 
@@ -64,18 +85,12 @@ public class TrackSomeoneActivity extends Activity
 
         if (mSecret == null || mSecret.isEmpty()) {
             Log.e(TrackThatThing.TAG, "Invalid secret!!!");
-            Toast.makeText(this, "Invalid secret provided!", Toast.LENGTH_LONG);
+            Toast.makeText(this, getString(R.string.invalid_secret), Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        setTitle("Tracking: " + mSecret);
-
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.the_map);
-        if (mapFragment == null) {
-            Log.e(TrackThatThing.TAG, "mapFragment is null!!!!");
-        }
-        mapFragment.getMapAsync(this);
+        setTitle(getString(R.string.tracking) + mSecret);
     }
 
     @Override
@@ -117,7 +132,6 @@ public class TrackSomeoneActivity extends Activity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Log.d(TrackThatThing.TAG, "onMapReady has map: " + mMap.toString());
     }
 
     private void startLocationUpdates() {
@@ -188,9 +202,6 @@ public class TrackSomeoneActivity extends Activity
             Log.i(TrackThatThing.TAG, "Map not ready yet.  Not drawing point: " + location.toString());
             return;
         }
-        String txt = "Putting location on map: " + location.toString();
-        Log.d(TrackThatThing.TAG, txt);
-        Toast.makeText(this, txt, Toast.LENGTH_SHORT);
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -203,7 +214,7 @@ public class TrackSomeoneActivity extends Activity
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
         mMap.addMarker(new MarkerOptions()
-            .title("Location update")
+            .title(getString(R.string.location_update))
             .position(latLng));
     }
 }

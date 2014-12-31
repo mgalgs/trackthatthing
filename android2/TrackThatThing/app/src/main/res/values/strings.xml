@@ -20,5 +20,9 @@
     <string name="action_track_someone">Track someone else</string>
     <string name="map_controls_apply">Apply</string>
     <string name="secret_code">Secret code</string>
+    <string name="loading">Loading...</string>
+    <string name="invalid_secret">Invalid secret provided!</string>
+    <string name="tracking">"Tracking: "</string>
+    <string name="location_update">Location update</string>
 
 </resources>

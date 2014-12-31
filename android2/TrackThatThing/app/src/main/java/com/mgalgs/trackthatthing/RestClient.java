@@ -54,7 +54,6 @@ public class RestClient {
 		JSONObject json = null;
 		HttpClient httpclient = new DefaultHttpClient();
 
-		Log.i(TrackThatThing.TAG, "We're going to make a request to: " + url);
 		// Prepare a request object
 		HttpGet httpget = new HttpGet(url);
 
