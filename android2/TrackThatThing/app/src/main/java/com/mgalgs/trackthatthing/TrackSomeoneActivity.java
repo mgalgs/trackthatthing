@@ -38,6 +38,7 @@ public class TrackSomeoneActivity extends Activity
     private String mSecret;
     private final long UPDATE_DELAY_MS = 5000;
     private GoogleMap mMap;
+    private boolean mZoomedOnce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +195,13 @@ public class TrackSomeoneActivity extends Activity
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        if (!mZoomedOnce) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+            mZoomedOnce = true;
+        } else {
+            // just recenter
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
         mMap.addMarker(new MarkerOptions()
             .title("Location update")
             .position(latLng));
