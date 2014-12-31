@@ -7,18 +7,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,22 +22,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 
 public class MainActivity extends Activity {
     public static final int ACTIVITY_RESULT_GET_SECRET = 0;
+    public static final int ACTIVITY_RESULT_JUS_GET_SECRET_STRING = 1;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -136,9 +126,8 @@ public class MainActivity extends Activity {
                 share();
                 return true;
             case R.id.action_track_someone:
-                Intent i = new Intent(this, TrackSomeoneActivity.class);
-                i.putExtra("secret", "test secret");
-                startActivity(i);
+                Intent i = new Intent(this, GetSecretDialogActivity.class);
+                startActivityForResult(i, ACTIVITY_RESULT_JUS_GET_SECRET_STRING);
                 return true;
         }
 
@@ -151,6 +140,14 @@ public class MainActivity extends Activity {
         switch (requestCode) {
             case ACTIVITY_RESULT_GET_SECRET:
                 startTracking();
+                break;
+            // these should really be consolidated... oh well...
+            case ACTIVITY_RESULT_JUS_GET_SECRET_STRING:
+                if (resultCode == RESULT_OK) {
+                    Intent i = new Intent(this, TrackSomeoneActivity.class);
+                    i.putExtra("secret", data.getStringExtra("secret"));
+                    startActivity(i);
+                }
                 break;
         }
     }

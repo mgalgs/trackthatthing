@@ -19,5 +19,6 @@
     <string name="title_activity_track_someone">Track someone else</string>
     <string name="action_track_someone">Track someone else</string>
     <string name="map_controls_apply">Apply</string>
+    <string name="secret_code">Secret code</string>
 
 </resources>

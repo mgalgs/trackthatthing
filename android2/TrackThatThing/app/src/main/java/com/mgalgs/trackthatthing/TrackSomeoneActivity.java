@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -23,7 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 
 public class TrackSomeoneActivity extends Activity
@@ -38,10 +42,25 @@ public class TrackSomeoneActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_track_someone);
+        setContentView(R.layout.layout_track_someone_else);
 
-        Bundle b = getIntent().getExtras();
-        mSecret = b.getString("secret");
+        String url = getIntent().getDataString();
+
+        if (url != null) {
+            // we're handling a /live?secret= URL
+            try {
+                url = URLDecoder.decode(url, "UTF-8");
+                mSecret = url.split("=")[1];
+                Log.e(TrackThatThing.TAG, "Decoded secret: " + mSecret);
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TrackThatThing.TAG, "Couldn't decode URL due to unsupported encoding: " + url);
+                e.printStackTrace();
+            }
+        } else {
+            // we were started with startActivity
+            mSecret = getIntent().getStringExtra("secret");
+        }
+
         if (mSecret == null || mSecret.isEmpty()) {
             Log.e(TrackThatThing.TAG, "Invalid secret!!!");
             Toast.makeText(this, "Invalid secret provided!", Toast.LENGTH_LONG);
@@ -49,17 +68,13 @@ public class TrackSomeoneActivity extends Activity
             return;
         }
 
-        Button btn = (Button) findViewById(R.id.btn_apply_someones_secret);
-        btn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText editText = (EditText) findViewById(R.id.txt_someones_secret);
-                String someones_secret = editText.getText().toString();
-                Log.d(TrackThatThing.TAG, "Have text: " + someones_secret);
-                mSecret = someones_secret;
-            }
-        });
-        EditText text = (EditText) findViewById(R.id.txt_someones_secret);
-        text.setText(mSecret);
+        setTitle("Tracking: " + mSecret);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.the_map);
+        if (mapFragment == null) {
+            Log.e(TrackThatThing.TAG, "mapFragment is null!!!!");
+        }
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -179,7 +194,7 @@ public class TrackSomeoneActivity extends Activity
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         mMap.setMyLocationEnabled(true);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         mMap.addMarker(new MarkerOptions()
             .title("Location update")
             .position(latLng));
