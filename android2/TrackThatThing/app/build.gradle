@@ -11,11 +11,16 @@ android {
         versionCode 3
         versionName "2.0"
     }
+    signingConfigs {
+        release {
+            storeFile file("~/my-release-key.keystore")
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
