@@ -6,7 +6,7 @@
 
 (defun ttt-runserver ()
   (interactive)
-  (ttt-run-command "python ./manage.py runserver"))
+  (ttt-run-command "python ./manage.py runserver 0.0.0.0:8000"))
 
 (defvar ttt-run-history nil)
 
@@ -23,7 +23,7 @@
 
 (defun ttt-run (cmd)
   (interactive (list (ttt-completing-read-must-match "Command to run: "
-                                                     '("python ./manage.py runserver"
+                                                     '("python ./manage.py runserver 0.0.0.0:8000"
                                                        "python ./manage.py runserver_plus"
                                                        "python ./manage.py makemigrations"
                                                        "python ./manage.py migrate"
