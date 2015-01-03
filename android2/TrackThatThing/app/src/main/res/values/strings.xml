@@ -8,9 +8,9 @@
     <string name="not_tracking">Not Tracking</string>
     <string name="yes_tracking">Tracking</string>
     <string name="secret_code_save">Save</string>
-    <string name="secret_get_secret">Get Secret Code</string>
-    <string name="hint_secret_code">secret code...</string>
-    <string name="action_secret">Edit secret code</string>
+    <string name="secret_get_secret">Get Tracking Code</string>
+    <string name="hint_secret_code">tracking code...</string>
+    <string name="action_secret">Edit tracking code</string>
     <string name="with_code">with code:</string>
     <string name="last_update">last update:</string>
     <string name="share">Share</string>
@@ -19,9 +19,9 @@
     <string name="title_activity_track_someone">Track someone else</string>
     <string name="action_track_someone">Track someone else</string>
     <string name="map_controls_apply">Apply</string>
-    <string name="secret_code">Secret code</string>
+    <string name="secret_code">Tracking code</string>
     <string name="loading">Loading...</string>
-    <string name="invalid_secret">Invalid secret provided!</string>
+    <string name="invalid_secret">Invalid tracking code provided!</string>
     <string name="tracking">"Tracking: "</string>
     <string name="location_update">Location update</string>
 
