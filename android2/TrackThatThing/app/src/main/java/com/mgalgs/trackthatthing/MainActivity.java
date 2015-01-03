@@ -139,7 +139,8 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ACTIVITY_RESULT_GET_SECRET:
-                startTracking();
+                if (resultCode == RESULT_OK)
+                    startTracking();
                 break;
             // these should really be consolidated... oh well...
             case ACTIVITY_RESULT_JUS_GET_SECRET_STRING:
