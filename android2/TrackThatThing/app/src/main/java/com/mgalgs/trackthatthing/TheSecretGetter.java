@@ -32,7 +32,7 @@ public class TheSecretGetter extends Activity {
 		btn.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				String secret_code = et.getText().toString();
+				String secret_code = et.getText().toString().trim();
 
 	        	if (secret_code != null) {
 	            	SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
