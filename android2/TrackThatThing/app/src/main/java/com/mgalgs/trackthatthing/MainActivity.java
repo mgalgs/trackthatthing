@@ -57,8 +57,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_tracking);
 
-        mTracking = savedInstanceState != null
-                && savedInstanceState.getBoolean(STATE_TRACKING, false);
+        mTracking = (savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_TRACKING, false))
+                || MyLocationService.tracking;
 
         Log.d(TrackThatThing.TAG, "onCreate, mTracking = " + (new Boolean(mTracking)).toString());
 
@@ -273,7 +274,10 @@ public class MainActivity extends Activity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.tracking_fragment_container, mYesTrackingFragment);
         fragmentTransaction.commit();
-        mTrackMenuItem.setIcon(R.drawable.ic_action_location_found);
+        // null-check needed since this can be called before
+        // onCreateOptionsMenu
+        if (mTrackMenuItem != null)
+            mTrackMenuItem.setIcon(R.drawable.ic_action_location_found);
     }
 
     private void updateActionBar() {
@@ -331,8 +335,12 @@ public class MainActivity extends Activity {
             return;
         }
 
+        // we always need the Intent so that we can stop the service later
+        // (it might already be started)
         mLocationServiceIntent = new Intent(MainActivity.this, MyLocationService.class);
-        MainActivity.this.startService(mLocationServiceIntent);
+        if (!MyLocationService.tracking) {
+            MainActivity.this.startService(mLocationServiceIntent);
+        }
 
         mTracking = true;
         UI_yesTracking();
@@ -340,8 +348,10 @@ public class MainActivity extends Activity {
     }
 
     private void stopTracking() {
-        if (mLocationServiceIntent != null)
+        if (mLocationServiceIntent != null) {
             stopService(mLocationServiceIntent);
+            mLocationServiceIntent = null;
+        }
         mTracking = false;
         UI_notTracking();
         updateActionBar();

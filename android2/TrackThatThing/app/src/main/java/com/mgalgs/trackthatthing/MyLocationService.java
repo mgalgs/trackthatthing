@@ -52,6 +52,7 @@ public class MyLocationService extends Service implements
             MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
     private boolean mResolvingError = false;
     private GoogleApiClient mGoogleApiClient;
+    public static boolean tracking;
 
 
     public MyLocationService() {
@@ -93,6 +94,7 @@ public class MyLocationService extends Service implements
 
         // Display a notification about us starting.  We put an icon in the status bar.
         showNotification();
+        MyLocationService.tracking = true;
     }
 
     @Override
@@ -106,6 +108,7 @@ public class MyLocationService extends Service implements
 
     @Override
     public void onDestroy() {
+        MyLocationService.tracking = false;
         // Cancel the persistent notification.
         mNM.cancel(NOTIFICATION);
 
