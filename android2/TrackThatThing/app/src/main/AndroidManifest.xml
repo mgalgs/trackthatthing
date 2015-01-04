@@ -21,9 +21,21 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <!--
+        In order to keep our maps API key secret, we don't
+        place it under source control.  Please create a file at
+        res/values/maps_apikey.xml with the following content:
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <resources>
+            <string name="maps_apikey">[Production API Key]</string>
+        </resources>
+
+        Source: http://stackoverflow.com/a/8091837/209050
+        -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBd1aXqWnaARl37I3Z-efCAET6toroHcec" />
+            android:value="@string/maps_apikey" />
 
         <activity
             android:name=".MainActivity"

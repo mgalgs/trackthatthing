@@ -6,3 +6,5 @@ dev_appserver.datastore
 /django/ttt/ttt/ttt_local.py
 /django/ttt/database.db
 /django/ttt/ttt/local_settings.py
+/android2/TrackThatThing/app/src/main/res/values/maps_apikey.xml
+/android2/TrackThatThingTV/app/src/main/res/values/maps_apikey.xml
