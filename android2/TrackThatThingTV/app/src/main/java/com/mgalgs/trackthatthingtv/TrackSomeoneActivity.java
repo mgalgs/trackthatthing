@@ -59,6 +59,20 @@ public class TrackSomeoneActivity extends Activity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        startLocationUpdates();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        stopLocationUpdates();
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
     }
