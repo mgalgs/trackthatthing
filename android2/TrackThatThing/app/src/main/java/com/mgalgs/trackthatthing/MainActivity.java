@@ -298,6 +298,8 @@ public class MainActivity extends Activity
 
     private void share()
     {
+        if (mSecretCode == null)
+            return;
         String subject = "See where I'm at in real-time!";
         String bodyText = "http://www.trackthatthing.com";
         try {

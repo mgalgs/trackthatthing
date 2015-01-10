@@ -91,6 +91,9 @@ public class TrackSomeoneActivity extends Activity
         }
 
         setTitle(getString(R.string.tracking) + mSecret);
+        TrackThatThingDB trackThatThingDB = new TrackThatThingDB(this);
+        if (trackThatThingDB.addTrackingCode(mSecret) == -1)
+            trackThatThingDB.updateTrackingCodeLastUse(mSecret);
     }
 
     @Override

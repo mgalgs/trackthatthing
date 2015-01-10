@@ -7,7 +7,8 @@
     <TextView
         android:id="@+id/tv_lv_item_tracking_code_code"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
     <TextView
         android:id="@+id/tv_lv_item_tracking_code_last_used"
         android:layout_width="wrap_content"

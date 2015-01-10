@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class GetTrackingCodeDialogFragment extends DialogFragment {
     private Cursor mCursor;
@@ -45,14 +47,31 @@ public class GetTrackingCodeDialogFragment extends DialogFragment {
                               TrackThatThingDB.TrackingCodeEntry.COLUMN_NAME_LAST_USE },
                 new int[]{R.id.tv_lv_item_tracking_code_code, R.id.tv_lv_item_tracking_code_last_used},
                 0);
+        mSimpleCursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                if (columnIndex == cursor.getColumnIndex(TrackThatThingDB.TrackingCodeEntry.COLUMN_NAME_LAST_USE)) {
+                    long dateMillis = cursor.getLong(columnIndex);
+                    Log.e(TrackThatThing.TAG, "Have datemillis " + String.valueOf(dateMillis) +
+                    " and current millis is " + String.valueOf(System.currentTimeMillis()));
+                    TextView textView = (TextView) view;
+                    textView.setText(activity.getString(R.string.last_used)
+                            + DateUtils.getRelativeTimeSpanString(dateMillis));
+                    return true;
+                }
+                return false;
+            }
+        });
 
         ListView listView = (ListView) getTrackingCodeView.findViewById(R.id.lv_tracking_codes);
+        TextView emptyView = (TextView) getTrackingCodeView.findViewById(R.id.tv_no_tracking_codes);
+        listView.setEmptyView(emptyView);
         listView.setAdapter(mSimpleCursorAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String trackingCode = getTrackingCodeAtCursorPos(position);
-                mTrackThatThingDB.updateTrackingCodeLastUse(trackingCode);
+                // mTrackThatThingDB.updateTrackingCodeLastUse(trackingCode); // updated in TrackSomeoneActivity.onCreate
                 TrackingCodeSelectListener activity = (TrackingCodeSelectListener) getActivity();
                 activity.onFinishTrackingCodeSelect(trackingCode);
                 GetTrackingCodeDialogFragment.this.dismiss();
@@ -67,10 +86,10 @@ public class GetTrackingCodeDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 EditText editText = (EditText) getTrackingCodeView.findViewById(R.id.et_jus_secret);
                 String trackingCode = editText.getText().toString();
-                mTrackThatThingDB.addTrackingCode(trackingCode);
-                    GetTrackingCodeDialogFragment.this.dismiss();
-                    TrackingCodeSelectListener activity = (TrackingCodeSelectListener) getActivity();
-                    activity.onFinishTrackingCodeSelect(trackingCode);
+                // mTrackThatThingDB.addTrackingCode(trackingCode); // added in TrackSomeoneActivity.onCreate
+                GetTrackingCodeDialogFragment.this.dismiss();
+                TrackingCodeSelectListener activity = (TrackingCodeSelectListener) getActivity();
+                activity.onFinishTrackingCodeSelect(trackingCode);
             }
         });
 
