@@ -8,3 +8,5 @@ dev_appserver.datastore
 /django/ttt/ttt/local_settings.py
 /android2/TrackThatThing/app/src/main/res/values/maps_apikey.xml
 /android2/TrackThatThingTV/app/src/main/res/values/maps_apikey.xml
+/android2/TrackThatThing/app/app-release.apk
+/android2/TrackThatThing/app/manifest-merger-release-report.txt

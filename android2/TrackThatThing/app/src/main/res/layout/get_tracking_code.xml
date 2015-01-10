@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.mgalgs.trackthatthing.GetSecretDialogActivity">
+
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="254dp"
+        android:id="@+id/lv_tracking_codes"
+        android:layout_gravity="center_horizontal" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight=".75"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_jus_secret"
+            android:hint="@string/secret_code" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight=".25"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:id="@+id/btn_jus_ok_secret" />
+    </LinearLayout>
+
+</LinearLayout>

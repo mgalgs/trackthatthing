@@ -19,10 +19,11 @@
     <string name="title_activity_track_someone">Track someone else</string>
     <string name="action_track_someone">Track someone else</string>
     <string name="map_controls_apply">Apply</string>
-    <string name="secret_code">Tracking code</string>
+    <string name="secret_code">Enter new tracking code</string>
     <string name="loading">Loading...</string>
     <string name="invalid_secret">Invalid tracking code provided!</string>
     <string name="tracking">"Tracking: "</string>
     <string name="location_update">Location update</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

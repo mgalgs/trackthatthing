@@ -30,7 +30,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+        implements GetTrackingCodeDialogFragment.TrackingCodeSelectListener {
     public static final int ACTIVITY_RESULT_GET_SECRET = 0;
     public static final int ACTIVITY_RESULT_JUS_GET_SECRET_STRING = 1;
     /*
@@ -127,8 +128,7 @@ public class MainActivity extends Activity {
                 share();
                 return true;
             case R.id.action_track_someone:
-                Intent i = new Intent(this, GetSecretDialogActivity.class);
-                startActivityForResult(i, ACTIVITY_RESULT_JUS_GET_SECRET_STRING);
+                (new GetTrackingCodeDialogFragment()).show(getFragmentManager(), "get tracking code");
                 return true;
         }
 
@@ -152,6 +152,13 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onFinishTrackingCodeSelect(String trackingCode) {
+        Intent i = new Intent(this, TrackSomeoneActivity.class);
+        i.putExtra("secret", trackingCode);
+        startActivity(i);
     }
 
     public static class NotTrackingFragment extends Fragment {
