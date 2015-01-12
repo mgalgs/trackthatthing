@@ -12,7 +12,8 @@
         android:text="@string/yes_tracking"
         android:id="@+id/yes_tracking"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="30dp" />
 
     <TextView
         android:layout_width="wrap_content"

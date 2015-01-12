@@ -12,5 +12,36 @@
         android:text="@string/not_tracking"
         android:id="@+id/not_tracking"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="30dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/not_tracking"
+        android:layout_marginTop="10dp"
+        android:layout_centerInParent="true">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="(Press "
+            android:layout_gravity="center"
+            android:id="@+id/textView3" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/common_action_bar_splitter"
+            android:src="@drawable/ic_action_location_searching" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=" above to start tracking)"
+            android:layout_gravity="center"
+            android:id="@+id/textView4" />
+        </LinearLayout>
+
+
 </RelativeLayout>
