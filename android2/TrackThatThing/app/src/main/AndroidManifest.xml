@@ -75,11 +75,12 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".GetSecretDialogActivity"
-            android:label="@string/secret_code"
-            android:theme="@android:style/Theme.Holo.Dialog" >
-        </activity>
+
+        <service
+            android:name=".FriendProximityService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

@@ -27,5 +27,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_saved_tracking_codes">No saved tracking codes</string>
     <string name="last_used">"Last used: "</string>
+    <string name="friend_approaching">Friend approaching</string>
 
 </resources>
