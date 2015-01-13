@@ -151,6 +151,10 @@ public class TrackSomeoneActivity extends Activity
         protected Location doInBackground(String... urls) {
             String url = urls[0];
             JSONObject json = RestClient.connect(url);
+            if (json == null) {
+                Log.e(TrackThatThing.TAG, "Couldn't connect to " + url);
+                return null;
+            }
             double longitude, latitude;
             try {
                 JSONObject data = json.getJSONObject("data");
