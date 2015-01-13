@@ -52,8 +52,6 @@ public class GetTrackingCodeDialogFragment extends DialogFragment {
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 if (columnIndex == cursor.getColumnIndex(TrackThatThingDB.TrackingCodeEntry.COLUMN_NAME_LAST_USE)) {
                     long dateMillis = cursor.getLong(columnIndex);
-                    Log.e(TrackThatThing.TAG, "Have datemillis " + String.valueOf(dateMillis) +
-                    " and current millis is " + String.valueOf(System.currentTimeMillis()));
                     TextView textView = (TextView) view;
                     textView.setText(activity.getString(R.string.last_used)
                             + DateUtils.getRelativeTimeSpanString(dateMillis));
