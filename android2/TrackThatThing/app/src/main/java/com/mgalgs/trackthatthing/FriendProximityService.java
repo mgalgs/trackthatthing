@@ -31,7 +31,7 @@ public class FriendProximityService extends Service
     public static boolean isRunning;
     private final ScheduledExecutorService mScheduler =
             Executors.newScheduledThreadPool(1);
-    private double mFriendDistanceNotificationThreshold = 200;
+    private double mFriendDistanceNotificationThreshold = 804; // ~1/2 mile
 
 
     // This is the object that receives interactions from clients.  See
@@ -175,14 +175,12 @@ public class FriendProximityService extends Service
     }
 
     private void notifyProximity() {
-        String text = "Your friend is < " +
-                String.valueOf(mFriendDistanceNotificationThreshold) +
-                " meters away!";
+        String text = "Your friend is < 1/2 mile away!";
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_ttt_icon)
                 .setContentTitle(getString(R.string.friend_approaching))
                 .setContentText(text)
-                .setVibrate(new long[]{0, 100, 100, 100, 100, 100, 100, 100})
+                .setVibrate(new long[]{0, 200, 200, 200, 200, 200, 200, 200})
                 .setDefaults(Notification.DEFAULT_SOUND|Notification.DEFAULT_LIGHTS)
                 .setOnlyAlertOnce(true)
                 .build();
