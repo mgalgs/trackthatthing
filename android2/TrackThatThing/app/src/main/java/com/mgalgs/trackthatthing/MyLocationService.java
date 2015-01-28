@@ -261,8 +261,8 @@ public class MyLocationService extends Service implements
                 SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss a yyyy-MM-dd");
                 Calendar cal = Calendar.getInstance();
 
-                editor.putString(TrackThatThing.PREF_LAST_LOC_TIME,
-                        sdf.format(cal.getTime()));
+                editor.putLong(TrackThatThing.PREF_LAST_LOC_TIME_MILLIS,
+                        cal.getTimeInMillis());
                 editor.apply();
 
                 Intent i = new Intent(TrackThatThing.IF_LOC_UPDATE);

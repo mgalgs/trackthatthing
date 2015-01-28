@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +29,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Calendar;
 
 
 public class MainActivity extends Activity
@@ -173,13 +175,40 @@ public class MainActivity extends Activity
     public static class YesTrackingFragment extends Fragment {
         private View mView;
 
+        private Runnable mTimeAgoTask = new Runnable() {
+            @Override
+            public void run() {
+                final MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity == null) {
+                    Log.d(TrackThatThing.TAG, "Don't have an activity to update last loc. Jus' turf return.");
+                    return;
+                }
+                updateLastLoc(mainActivity);
+                mainActivity.mHandler.postDelayed(mTimeAgoTask, 1000);
+            }
+        };
+
+        @Override
+        public void onStop() {
+            final MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.mHandler.removeCallbacks(mTimeAgoTask);
+            super.onStop();
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            final MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.mHandler.postDelayed(mTimeAgoTask, 1000);
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             mView = inflater.inflate(R.layout.fragment_layout_yes_tracking, container, false);
 
-            MainActivity mainActivity = (MainActivity) getActivity();
+            final MainActivity mainActivity = (MainActivity) getActivity();
             updateSecretCode(mainActivity.mSecretCode);
             updateLastLoc(mainActivity.getApplicationContext());
 
@@ -195,7 +224,14 @@ public class MainActivity extends Activity
         public void updateLastLoc(Context context) {
             SharedPreferences settings = context.getSharedPreferences(TrackThatThing.PREFS_NAME,
                     android.content.Context.MODE_PRIVATE);
-            String last = settings.getString(TrackThatThing.PREF_LAST_LOC_TIME, "a long time ago...");
+            long last_millis = settings.getLong(TrackThatThing.PREF_LAST_LOC_TIME_MILLIS, -1);
+            CharSequence last;
+            if (last_millis == -1) {
+                last = "a long time ago...";
+            } else {
+                last = DateUtils.getRelativeTimeSpanString(last_millis,
+                        Calendar.getInstance().getTimeInMillis(), 0);
+            }
             if (mView == null) {
                 Log.d(TrackThatThing.TAG, "We don't have an mView yet. Not updating last loc tv.");
                 return;
