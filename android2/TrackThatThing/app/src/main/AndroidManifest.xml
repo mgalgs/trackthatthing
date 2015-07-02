@@ -81,6 +81,18 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <receiver
+            android:name=".TrackingBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.mgalgs.trackthatthing.START_TRACKING"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.mgalgs.trackthatthing.STOP_TRACKING"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

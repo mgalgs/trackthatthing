@@ -368,8 +368,6 @@ public class MainActivity extends Activity
             startTracking();
     }
 
-    private Intent mLocationServiceIntent;
-
     private void startTracking() {
 
         SharedPreferences settings = getSharedPreferences(TrackThatThing.PREFS_NAME, MODE_PRIVATE);
@@ -382,9 +380,9 @@ public class MainActivity extends Activity
 
         // we always need the Intent so that we can stop the service later
         // (it might already be started)
-        mLocationServiceIntent = new Intent(MainActivity.this, MyLocationService.class);
+        MyLocationService.locationServiceIntent = new Intent(MainActivity.this, MyLocationService.class);
         if (!MyLocationService.tracking) {
-            MainActivity.this.startService(mLocationServiceIntent);
+            MainActivity.this.startService(MyLocationService.locationServiceIntent);
         }
 
         mTracking = true;
@@ -393,9 +391,9 @@ public class MainActivity extends Activity
     }
 
     private void stopTracking() {
-        if (mLocationServiceIntent != null) {
-            stopService(mLocationServiceIntent);
-            mLocationServiceIntent = null;
+        if (MyLocationService.locationServiceIntent != null) {
+            stopService(MyLocationService.locationServiceIntent);
+            MyLocationService.locationServiceIntent = null;
         }
         mTracking = false;
         UI_notTracking();

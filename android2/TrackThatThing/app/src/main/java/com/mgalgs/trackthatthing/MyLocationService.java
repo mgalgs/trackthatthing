@@ -53,6 +53,7 @@ public class MyLocationService extends Service implements
     private boolean mResolvingError = false;
     private GoogleApiClient mGoogleApiClient;
     public static boolean tracking;
+    public static Intent locationServiceIntent;
 
 
     public MyLocationService() {
