@@ -154,7 +154,7 @@ public class MyLocationService extends Service implements
 
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_ttt_icon)
+                .setSmallIcon(R.drawable.ic_ttt_icon_alpha)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
