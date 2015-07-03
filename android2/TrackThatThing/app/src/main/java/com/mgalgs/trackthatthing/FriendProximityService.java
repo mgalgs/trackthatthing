@@ -162,6 +162,7 @@ public class FriendProximityService extends Service
                 new LatLng(mMyLastLocation.getLatitude(), mMyLastLocation.getLongitude()));
 
         if (metersToFriend < mFriendDistanceNotificationThreshold) {
+            mFriendLastLatLng = null;
             notifyProximity();
             stopSelf();
         } else {
