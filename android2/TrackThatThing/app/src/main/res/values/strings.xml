@@ -28,5 +28,6 @@
     <string name="no_saved_tracking_codes">No saved tracking codes</string>
     <string name="last_used">"Last used: "</string>
     <string name="friend_approaching">Friend approaching</string>
+    <string name="your_friend_is_approaching"><![CDATA[Your friend is < 1/2 mile away!]]></string>
 
 </resources>

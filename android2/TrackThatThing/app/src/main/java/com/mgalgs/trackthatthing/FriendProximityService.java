@@ -175,7 +175,7 @@ public class FriendProximityService extends Service
     }
 
     private void notifyProximity() {
-        String text = "Your friend is < 1/2 mile away!";
+        String text = getString(R.string.your_friend_is_approaching);
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_ttt_icon_alpha)
                 .setContentTitle(getString(R.string.friend_approaching))
