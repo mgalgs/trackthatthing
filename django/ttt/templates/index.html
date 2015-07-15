@@ -8,14 +8,14 @@
 {% endif %}
 
 <div id="main-button-container">
-  {% if not user %}
+  {% if not user.is_authenticated %}
     <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"
-       id="main-button" class="big-button">Get Secret!</a>
+       id="main-button" class="big-button">Get Secret Code</a>
   {% endif %}
   <div class="instructions" style="width:550px; margin: 20px auto;">
     <h5 style="text-align: center;">How to start tracking your location using <i>Track That Thing</i>:</h5>
     <ol>
-      <li>Get a secret (click the button above)</li>
+      <li>Get a secret code by clicking the button above</li>
       <li><a href="/download">Download</a> and install <i>Track That Thing</i> for Android</li>
       <li>View a <a href="/live">live map</a> of yourself and share it with others!</li>
     </ol>
