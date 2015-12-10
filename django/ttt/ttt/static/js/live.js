@@ -177,7 +177,7 @@ var add_new_points = function() {
     if (data_points.length > 0) {
         data['last'] = data_points[data_points.length-1]['raw'].id;
     }
-    var data_url = '/get?' + $.param(data);
+    var data_url = 'https://trackthatthing.com/get?' + $.param(data);
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
         if (!obj.success) {
             $.gritter.add({title:'Error', text:obj.msg});
