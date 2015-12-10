@@ -337,12 +337,12 @@ public class MainActivity extends Activity
         if (mSecretCode == null)
             return;
         String subject = "See where I'm at in real-time!";
-        String bodyText = "http://www.trackthatthing.com";
+        String bodyText = "https://trackthatthing.com";
         try {
             bodyText = String
                     .format("Hey! I'm using TrackThatThing "
                                     + "to track my location. Check out the real-time map of my location "
-                                    + "here: http://www.trackthatthing.com/live?secret=%s",
+                                    + "here: https://trackthatthing.com/live?secret=%s",
                             URLEncoder.encode(mSecretCode, "ascii"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
