@@ -37,8 +37,8 @@ var renew_map = function() {
         $("#live-map-for-container").fadeIn();
     }
 
-    $("#map-permalink").attr('href', '/live?secret='+secret.replace(/ /g, ''));
-    $("#broken-map").attr('href', '/live?secret='+secret.replace(/ /g, ''));
+    $("#map-permalink").attr('href', '/live/?secret='+secret.replace(/ /g, ''));
+    $("#broken-map").attr('href', '/live/?secret='+secret.replace(/ /g, ''));
 
     clear_map();
 
@@ -47,7 +47,7 @@ var renew_map = function() {
     $("#current-map-for").html(secret);
 
     // get the data and update the map
-    var data_url = 'https://trackthatthing.com/get?secret='+secret+'&n='+get_number_of_points()+'&oldness='+get_oldness();
+    var data_url = '/get/?secret='+secret+'&n='+get_number_of_points()+'&oldness='+get_oldness();
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
         if (obj.success) {
             draw_new_points(obj.data.locations);
@@ -177,7 +177,7 @@ var add_new_points = function() {
     if (data_points.length > 0) {
         data['last'] = data_points[data_points.length-1]['raw'].id;
     }
-    var data_url = 'https://trackthatthing.com/get?' + $.param(data);
+    var data_url = '/get/?' + $.param(data);
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
         if (!obj.success) {
             $.gritter.add({title:'Error', text:obj.msg});
