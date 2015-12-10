@@ -113,7 +113,7 @@ var draw_new_points = function(data) {
         });
         // the pushpin:
         var pushpin = new google.maps.Marker({
-            icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon_withshadow&chld=glyphish_gear|ADDE63',
+            icon: 'https://chart.googleapis.com/chart?chst=d_map_pin_icon_withshadow&chld=glyphish_gear|ADDE63',
             map: the_map,
             position: ll,
             title: data[i]['date']+' -> '+i
