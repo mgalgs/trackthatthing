@@ -47,7 +47,7 @@ var renew_map = function() {
     $("#current-map-for").html(secret);
 
     // get the data and update the map
-    var data_url = '/get?secret='+secret+'&n='+get_number_of_points()+'&oldness='+get_oldness();
+    var data_url = 'https://trackthatthing.com/get?secret='+secret+'&n='+get_number_of_points()+'&oldness='+get_oldness();
     $.getJSON(data_url, function(obj, retval, xmlhttprequest) {
         if (obj.success) {
             draw_new_points(obj.data.locations);
